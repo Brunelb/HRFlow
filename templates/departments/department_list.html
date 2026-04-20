@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Départements{% endblock %}
+
+{% block content %}
+    <h1>Liste des départements</h1>
+
+    <a href="{% url 'department_create' %}">Créer un département</a>
+
+    <ul>
+        {% for department in departments %}
+            <li>
+                <strong>{{ department.name }}</strong>
+                - Manager :
+                {% if department.manager %}
+                    {{ department.manager.get_full_name|default:department.manager.username }}
+                {% else %}
+                    Non défini
+                {% endif %}
+                - <a href="{% url 'department_update' department.pk %}">Modifier</a>
+            </li>
+        {% empty %}
+            <li>Aucun département trouvé.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
