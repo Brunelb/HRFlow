@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Employés{% endblock %}
+
+{% block content %}
+    <h1>Liste des employés</h1>
+
+    {% if user.role == 'admin' or user.role == 'hr' %}
+        <a href="{% url 'employee_create' %}">Créer un employé</a>
+    {% endif %}
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Matricule</th>
+                <th>Nom</th>
+                <th>Département</th>
+                <th>Manager</th>
+                <th>Statut</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.employee_id }}</td>
+                    <td>{{ employee.user.get_full_name|default:employee.user.username }}</td>
+                    <td>{{ employee.department.name|default:"Non défini" }}</td>
+                    <td>{{ employee.manager.get_full_name|default:employee.manager.username|default:"Non défini" }}</td>
+                    <td>{{ employee.get_status_display }}</td>
+                    <td>
+                        <a href="{% url 'employee_detail' employee.pk %}">Voir</a>
+                        {% if user.role == 'admin' or user.role == 'hr' %}
+                            | <a href="{% url 'employee_update' employee.pk %}">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">Aucun employé trouvé.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

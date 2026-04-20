@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Détail employé{% endblock %}
+
+{% block content %}
+    <h1>Détail de l'employé</h1>
+
+    <p><strong>Matricule :</strong> {{ employee.employee_id }}</p>
+    <p><strong>Nom :</strong> {{ employee.user.get_full_name|default:employee.user.username }}</p>
+    <p><strong>Email :</strong> {{ employee.user.email }}</p>
+    <p><strong>Téléphone :</strong> {{ employee.phone }}</p>
+    <p><strong>Adresse :</strong> {{ employee.address }}</p>
+    <p><strong>Date d'embauche :</strong> {{ employee.hire_date }}</p>
+    <p><strong>Département :</strong> {{ employee.department.name|default:"Non défini" }}</p>
+    <p><strong>Manager :</strong> {{ employee.manager.get_full_name|default:employee.manager.username|default:"Non défini" }}</p>
+    <p><strong>Salaire de base :</strong> {{ employee.base_salary }}</p>
+    <p><strong>Statut :</strong> {{ employee.get_status_display }}</p>
+
+    {% if employee.profile_photo %}
+        <img src="{{ employee.profile_photo.url }}" alt="Photo de profil" width="120">
+    {% endif %}
+
+    {% if user.role == 'admin' or user.role == 'hr' %}
+        <p><a href="{% url 'employee_update' employee.pk %}">Modifier</a></p>
+    {% endif %}
+
+    <p><a href="{% url 'employee_list' %}">Retour à la liste</a></p>
+{% endblock %}
