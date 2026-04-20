@@ -31,6 +31,8 @@ urlpatterns = [
 
     path('accounts/', include('accounts.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('employees/', include('employees.urls')),
+    path('departments/', include('departments.urls')),
 ]
 
 if settings.DEBUG:

@@ -5,5 +5,9 @@
 {% block content %}
     <h1>Dashboard RH</h1>
     <p>Bienvenue {{ user.username }}.</p>
-    <p>Vous pouvez gérer les employés, congés et documents RH.</p>
+
+    <ul>
+        <li><a href="{% url 'employee_list' %}">Gérer les employés</a></li>
+        <li><a href="{% url 'department_list' %}">Gérer les départements</a></li>
+    </ul>
 {% endblock %}
