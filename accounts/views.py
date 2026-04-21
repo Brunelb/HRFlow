@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 def role_redirect_view(request):
     user = request.user
 
-    if user.role == 'admin':
+    if user.is_superuser or user.role == 'admin':
         return redirect('admin_dashboard')
     elif user.role == 'hr':
         return redirect('hr_dashboard')
