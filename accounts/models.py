@@ -9,7 +9,7 @@ class User(AbstractUser):
         ('employee', 'Employee'),
     )
 
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='admin')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='employee')
 
     def __str__(self):
         return self.username
