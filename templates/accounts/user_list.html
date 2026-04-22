@@ -17,28 +17,26 @@
                 <th>Email</th>
                 <th>Rôle</th>
                 <th>Actif</th>
-                <th>Staff</th>
-                <th>Superuser</th>
+                <th>Fiche employé</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            {% for user_obj in users %}
+            {% for item in users_with_employee_flag %}
                 <tr>
-                    <td>{{ user_obj.username }}</td>
-                    <td>{{ user_obj.get_full_name|default:"-" }}</td>
-                    <td>{{ user_obj.email|default:"-" }}</td>
-                    <td>{{ user_obj.get_role_display }}</td>
-                    <td>{{ user_obj.is_active|yesno:"Oui,Non" }}</td>
-                    <td>{{ user_obj.is_staff|yesno:"Oui,Non" }}</td>
-                    <td>{{ user_obj.is_superuser|yesno:"Oui,Non" }}</td>
+                    <td>{{ item.obj.username }}</td>
+                    <td>{{ item.obj.get_full_name|default:"-" }}</td>
+                    <td>{{ item.obj.email|default:"-" }}</td>
+                    <td>{{ item.obj.get_role_display }}</td>
+                    <td>{{ item.obj.is_active|yesno:"Oui,Non" }}</td>
+                    <td>{{ item.has_employee_profile|yesno:"Oui,Non" }}</td>
                     <td>
-                        <a href="{% url 'user_update' user_obj.pk %}">Modifier</a>
+                        <a href="{% url 'user_update' item.obj.pk %}">Modifier</a>
                     </td>
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="8">Aucun utilisateur trouvé.</td>
+                    <td colspan="7">Aucun utilisateur trouvé.</td>
                 </tr>
             {% endfor %}
         </tbody>
