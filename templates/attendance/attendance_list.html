@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Présences{% endblock %}
+
+{% block content %}
+    <h1>Présences</h1>
+
+    {% if user.role == 'employee' or user.role == 'manager' or user.role == 'hr' %}
+        <p><a href="{% url 'attendance_create' %}">Enregistrer ma présence</a></p>
+    {% endif %}
+
+    {% if user.role == 'hr' or user.role == 'admin' %}
+        <p><a href="{% url 'attendance_admin_create' %}">Ajouter une présence pour un employé</a></p>
+    {% endif %}
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Employé</th>
+                <th>Date</th>
+                <th>Arrivée</th>
+                <th>Départ</th>
+                <th>Statut</th>
+                <th>Heures travaillées</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+                <tr>
+                    <td>{{ attendance.employee }}</td>
+                    <td>{{ attendance.date }}</td>
+                    <td>{{ attendance.check_in|default:"-" }}</td>
+                    <td>{{ attendance.check_out|default:"-" }}</td>
+                    <td>{{ attendance.get_status_display }}</td>
+                    <td>{{ attendance.worked_hours|default:"-" }}</td>
+                    <td>
+                        <a href="{% url 'attendance_detail' attendance.pk %}">Voir</a>
+
+                        {% if user.role == 'hr' or user.role == 'admin' %}
+                            | <a href="{% url 'attendance_update' attendance.pk %}">Modifier</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">Aucune présence trouvée.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
