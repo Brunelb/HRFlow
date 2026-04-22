@@ -22,7 +22,17 @@ def role_redirect_view(request):
 @role_required(['admin'])
 def user_list(request):
     users = User.objects.all().order_by('username')
-    return render(request, 'accounts/user_list.html', {'users': users})
+
+    users_with_employee_flag = []
+    for user in users:
+        users_with_employee_flag.append({
+            'obj': user,
+            'has_employee_profile': hasattr(user, 'employee_profile')
+        })
+
+    return render(request, 'accounts/user_list.html', {
+        'users_with_employee_flag': users_with_employee_flag
+    })
 
 
 @login_required

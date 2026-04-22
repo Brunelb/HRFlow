@@ -42,12 +42,12 @@ class Employee(models.Model):
     class Meta:
         ordering = ['employee_id']
 
+    def save(self, *args, **kwargs):
+        if not self.employee_id:
+            last_employee = Employee.objects.order_by('id').last()
+            next_id = 1 if not last_employee else last_employee.id + 1
+            self.employee_id = f"EMP{next_id:04d}"
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.employee_id} - {self.user.get_full_name() or self.user.username}"
-
-def save(self, *args, **kwargs):
-    if not self.employee_id:
-        last_employee = Employee.objects.order_by('id').last()
-        next_id = 1 if not last_employee else last_employee.id + 1
-        self.employee_id = f"EMP{next_id:04d}"
-    super().save(*args, **kwargs)
