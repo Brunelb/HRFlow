@@ -1,5 +1,8 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import User
+from .forms import AdminUserCreationForm, AdminUserUpdateForm
+from .decorators import role_required
 
 @login_required
 def role_redirect_view(request):
@@ -13,3 +16,46 @@ def role_redirect_view(request):
         return redirect('manager_dashboard')
     else:
         return redirect('employee_dashboard')
+
+
+@login_required
+@role_required(['admin'])
+def user_list(request):
+    users = User.objects.all().order_by('username')
+    return render(request, 'accounts/user_list.html', {'users': users})
+
+
+@login_required
+@role_required(['admin'])
+def user_create(request):
+    if request.method == 'POST':
+        form = AdminUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('user_list')
+    else:
+        form = AdminUserCreationForm()
+
+    return render(request, 'accounts/user_form.html', {
+        'form': form,
+        'title': 'Créer un utilisateur'
+    })
+
+
+@login_required
+@role_required(['admin'])
+def user_update(request, pk):
+    user_obj = get_object_or_404(User, pk=pk)
+
+    if request.method == 'POST':
+        form = AdminUserUpdateForm(request.POST, instance=user_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('user_list')
+    else:
+        form = AdminUserUpdateForm(instance=user_obj)
+
+    return render(request, 'accounts/user_form.html', {
+        'form': form,
+        'title': 'Modifier un utilisateur'
+    })
