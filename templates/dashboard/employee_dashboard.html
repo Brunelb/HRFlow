@@ -5,5 +5,9 @@
 {% block content %}
     <h1>Dashboard Employé</h1>
     <p>Bienvenue {{ user.username }}.</p>
-    <p>Vous pouvez consulter vos informations personnelles.</p>
+
+    <ul>
+        <li><a href="{% url 'leave_list' %}">Mes congés</a></li>
+        <li><a href="{% url 'leave_create' %}">Faire une demande de congé</a></li>
+    </ul>
 {% endblock %}

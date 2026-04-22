@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Demandes de congé{% endblock %}
+
+{% block content %}
+    <h1>Demandes de congé</h1>
+
+    {% if user.role == 'employee' or user.role == 'manager' or user.role == 'hr' %}
+        <p><a href="{% url 'leave_create' %}">Faire une demande de congé</a></p>
+    {% endif %}
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Employé</th>
+                <th>Type</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Statut</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+                <tr>
+                    <td>{{ leave.employee }}</td>
+                    <td>{{ leave.get_leave_type_display }}</td>
+                    <td>{{ leave.start_date }}</td>
+                    <td>{{ leave.end_date }}</td>
+                    <td>{{ leave.get_status_display }}</td>
+                    <td>
+                        <a href="{% url 'leave_detail' leave.pk %}">Voir</a>
+
+                        {% if user.role == 'manager' and leave.status == 'pending_manager' %}
+                            | <a href="{% url 'manager_leave_approval' leave.pk %}">Traiter</a>
+                        {% endif %}
+
+                        {% if user.role == 'hr' or user.role == 'admin' %}
+                            {% if leave.status == 'pending_hr' %}
+                                | <a href="{% url 'hr_leave_approval' leave.pk %}">Valider RH</a>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">Aucune demande trouvée.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

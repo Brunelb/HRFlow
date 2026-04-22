@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+
+    <p><strong>Employé :</strong> {{ leave.employee }}</p>
+    <p><strong>Type :</strong> {{ leave.get_leave_type_display }}</p>
+    <p><strong>Date début :</strong> {{ leave.start_date }}</p>
+    <p><strong>Date fin :</strong> {{ leave.end_date }}</p>
+    <p><strong>Motif :</strong> {{ leave.reason }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Valider</button>
+    </form>
+
+    <p><a href="{% url 'leave_list' %}">Retour</a></p>
+{% endblock %}

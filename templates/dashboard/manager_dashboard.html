@@ -5,5 +5,10 @@
 {% block content %}
     <h1>Dashboard Manager</h1>
     <p>Bienvenue {{ user.username }}.</p>
-    <p>Vous pouvez suivre votre équipe et valider certaines demandes.</p>
+
+    <ul>
+        <li><a href="{% url 'employee_list' %}">Mon équipe</a></li>
+        <li><a href="{% url 'leave_list' %}">Demandes de congé à traiter</a></li>
+        <li><a href="{% url 'leave_create' %}">Faire une demande de congé</a></li>
+    </ul>
 {% endblock %}
