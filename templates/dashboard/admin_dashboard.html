@@ -5,5 +5,15 @@
 {% block content %}
     <h1>Dashboard Admin</h1>
     <p>Bienvenue {{ user.username }}.</p>
-    <p>Vous avez accès à toute la plateforme.</p>
+
+    <ul>
+        <li><a href="{% url 'user_list' %}">Gérer les utilisateurs</a></li>
+        <li><a href="{% url 'employee_list' %}">Gérer les employés</a></li>
+        <li><a href="{% url 'employee_create' %}">Créer une fiche employé</a></li>
+        <li><a href="{% url 'department_list' %}">Gérer les départements</a></li>
+    </ul>
+
+    <p>
+        Workflow conseillé : créer d’abord le compte utilisateur, puis créer sa fiche employé.
+    </p>
 {% endblock %}

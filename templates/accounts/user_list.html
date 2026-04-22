@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestion des utilisateurs{% endblock %}
+
+{% block content %}
+    <h1>Gestion des utilisateurs</h1>
+
+    <p>
+        <a href="{% url 'user_create' %}">Créer un utilisateur</a>
+    </p>
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Nom d'utilisateur</th>
+                <th>Nom complet</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Actif</th>
+                <th>Fiche employé</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in users_with_employee_flag %}
+                <tr>
+                    <td>{{ item.obj.username }}</td>
+                    <td>{{ item.obj.get_full_name|default:"-" }}</td>
+                    <td>{{ item.obj.email|default:"-" }}</td>
+                    <td>{{ item.obj.get_role_display }}</td>
+                    <td>{{ item.obj.is_active|yesno:"Oui,Non" }}</td>
+                    <td>{{ item.has_employee_profile|yesno:"Oui,Non" }}</td>
+                    <td>
+                        <a href="{% url 'user_update' item.obj.pk %}">Modifier</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">Aucun utilisateur trouvé.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
