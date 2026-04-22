@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Détail congé{% endblock %}
+
+{% block content %}
+    <h1>Détail de la demande</h1>
+
+    <p><strong>Employé :</strong> {{ leave.employee }}</p>
+    <p><strong>Type :</strong> {{ leave.get_leave_type_display }}</p>
+    <p><strong>Date début :</strong> {{ leave.start_date }}</p>
+    <p><strong>Date fin :</strong> {{ leave.end_date }}</p>
+    <p><strong>Motif :</strong> {{ leave.reason }}</p>
+    <p><strong>Statut :</strong> {{ leave.get_status_display }}</p>
+
+    <p><strong>Commentaire manager :</strong> {{ leave.manager_comment|default:"-" }}</p>
+    <p><strong>Commentaire RH :</strong> {{ leave.hr_comment|default:"-" }}</p>
+
+    <p><a href="{% url 'leave_list' %}">Retour</a></p>
+{% endblock %}

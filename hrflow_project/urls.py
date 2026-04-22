@@ -33,6 +33,7 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('employees/', include('employees.urls')),
     path('departments/', include('departments.urls')),
+    path('leaves/', include('leaves.urls')),
 ]
 
 if settings.DEBUG:
