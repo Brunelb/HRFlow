@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Détail présence{% endblock %}
+
+{% block content %}
+    <h1>Détail de présence</h1>
+
+    <p><strong>Employé :</strong> {{ attendance.employee }}</p>
+    <p><strong>Date :</strong> {{ attendance.date }}</p>
+    <p><strong>Heure d'arrivée :</strong> {{ attendance.check_in|default:"-" }}</p>
+    <p><strong>Heure de départ :</strong> {{ attendance.check_out|default:"-" }}</p>
+    <p><strong>Statut :</strong> {{ attendance.get_status_display }}</p>
+    <p><strong>Heures travaillées :</strong> {{ attendance.worked_hours|default:"-" }}</p>
+    <p><strong>Note :</strong> {{ attendance.note|default:"-" }}</p>
+
+    <p><a href="{% url 'attendance_list' %}">Retour</a></p>
+{% endblock %}
