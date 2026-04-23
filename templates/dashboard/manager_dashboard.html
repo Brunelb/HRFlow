@@ -3,14 +3,37 @@
 {% block title %}Dashboard Manager{% endblock %}
 
 {% block content %}
-    <h1>Dashboard Manager</h1>
-    <p>Bienvenue {{ user.username }}.</p>
+<h1 class="page-title">Dashboard Manager</h1>
+<p class="text-muted">Suivi de votre équipe.</p>
 
-    <ul>
-        <li><a href="{% url 'employee_list' %}">Mon équipe</a></li>
-        <li><a href="{% url 'leave_list' %}">Demandes de congé à traiter</a></li>
-        <li><a href="{% url 'leave_create' %}">Faire une demande de congé</a></li>
-        <li><a href="{% url 'attendance_list' %}">Présences de mon équipe</a></li>
-        <li><a href="{% url 'document_list' %}">Documents de mon équipe</a></li>
-    </ul>
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Membres de l’équipe</h6>
+            <h2>{{ team_count }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Congés à valider</h6>
+            <h2>{{ pending_team_leaves }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Absences du jour</h6>
+            <h2>{{ team_today_absences }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="card card-kpi p-4">
+    <h5>Accès rapides</h5>
+    <div class="d-flex flex-wrap gap-2 mt-2">
+        <a href="{% url 'employee_list' %}" class="btn btn-primary btn-sm">Mon équipe</a>
+        <a href="{% url 'leave_list' %}" class="btn btn-warning btn-sm">Congés</a>
+        <a href="{% url 'attendance_list' %}" class="btn btn-info btn-sm">Présences</a>
+        <a href="{% url 'document_list' %}" class="btn btn-success btn-sm">Documents</a>
+    </div>
+</div>
 {% endblock %}
