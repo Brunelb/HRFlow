@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Historique des salaires</h1>
+
+<a href="{% url 'salary_history_create' %}">Nouveau changement</a>
+
+<table border="1">
+    <tr>
+        <th>Employé</th>
+        <th>Ancien</th>
+        <th>Nouveau</th>
+        <th>Raison</th>
+        <th>Date</th>
+    </tr>
+
+    {% for item in history %}
+    <tr>
+        <td>{{ item.employee }}</td>
+        <td>{{ item.old_salary }}</td>
+        <td>{{ item.new_salary }}</td>
+        <td>{{ item.reason }}</td>
+        <td>{{ item.changed_at }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Fiches de paie{% endblock %}
+
+{% block content %}
+<h1>Fiches de paie</h1>
+
+{% if user.role == 'hr' or user.role == 'admin' %}
+    <a href="{% url 'payroll_create' %}">Créer une fiche</a>
+    <a href="{% url 'salary_history_list' %}">Historique salaire</a>
+{% endif %}
+
+<table border="1">
+    <tr>
+        <th>Employé</th>
+        <th>Mois</th>
+        <th>Année</th>
+        <th>Salaire base</th>
+        <th>Bonus</th>
+        <th>Déductions</th>
+        <th>Net</th>
+        <th>Action</th>
+    </tr>
+
+    {% for payroll in payrolls %}
+    <tr>
+        <td>{{ payroll.employee }}</td>
+        <td>{{ payroll.get_month_display }}</td>
+        <td>{{ payroll.year }}</td>
+        <td>{{ payroll.base_salary }}</td>
+        <td>{{ payroll.bonus }}</td>
+        <td>{{ payroll.deductions }}</td>
+        <td>{{ payroll.net_salary }}</td>
+
+        <td>
+            <a href="{% url 'payroll_detail' payroll.pk %}">Voir</a>
+
+            {% if user.role == 'hr' or user.role == 'admin' %}
+                | <a href="{% url 'payroll_update' payroll.pk %}">Modifier</a>
+                | <a href="{% url 'payroll_delete' payroll.pk %}">Supprimer</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
