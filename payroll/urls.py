@@ -1,5 +1,13 @@
 from django.urls import path
-from .views import *
+from .views import (
+    payroll_list,
+    payroll_detail,
+    payroll_create,
+    payroll_update,
+    payroll_delete,
+    salary_history_list,
+    salary_history_create,
+)
 
 urlpatterns = [
     path('', payroll_list, name='payroll_list'),
