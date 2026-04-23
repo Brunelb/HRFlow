@@ -35,6 +35,7 @@ urlpatterns = [
     path('departments/', include('departments.urls')),
     path('leaves/', include('leaves.urls')),
     path('attendance/', include('attendance.urls')),
+    path('documents/', include('documents.urls')),
 ]
 
 if settings.DEBUG:

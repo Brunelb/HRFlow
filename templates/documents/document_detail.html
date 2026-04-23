@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Détail document{% endblock %}
+
+{% block content %}
+    <h1>Détail du document</h1>
+
+    <p><strong>Employé :</strong> {{ document.employee }}</p>
+    <p><strong>Titre :</strong> {{ document.title }}</p>
+    <p><strong>Type :</strong> {{ document.get_document_type_display }}</p>
+    <p><strong>Description :</strong> {{ document.description|default:"-" }}</p>
+    <p><strong>Ajouté par :</strong> {{ document.uploaded_by|default:"-" }}</p>
+    <p><strong>Ajouté le :</strong> {{ document.uploaded_at }}</p>
+
+    <p>
+        <strong>Fichier :</strong>
+        <a href="{{ document.file.url }}" target="_blank">Ouvrir le document</a>
+    </p>
+
+    <p><a href="{% url 'document_list' %}">Retour</a></p>
+{% endblock %}
