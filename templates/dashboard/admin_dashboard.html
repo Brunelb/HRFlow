@@ -3,20 +3,87 @@
 {% block title %}Dashboard Admin{% endblock %}
 
 {% block content %}
-    <h1>Dashboard Admin</h1>
-    <p>Bienvenue {{ user.username }}.</p>
+<h1 class="page-title">Dashboard Admin</h1>
+<p class="text-muted">Vue globale de la plateforme RH.</p>
 
-    <ul>
-        <li><a href="{% url 'user_list' %}">Gérer les utilisateurs</a></li>
-        <li><a href="{% url 'employee_list' %}">Gérer les employés</a></li>
-        <li><a href="{% url 'employee_create' %}">Créer une fiche employé</a></li>
-        <li><a href="{% url 'department_list' %}">Gérer les départements</a></li>
-        <li><a href="{% url 'attendance_list' %}">Toutes les présences</a></li>
-        <li><a href="{% url 'document_list' %}">Tous les documents</a></li>
-        <li><a href="{% url 'document_create' %}">Ajouter un document</a></li>
-    </ul>
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Employés</h6>
+            <h2>{{ total_employees }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Départements</h6>
+            <h2>{{ total_departments }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Congés en attente</h6>
+            <h2>{{ pending_leaves }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Absences du jour</h6>
+            <h2>{{ today_absences }}</h2>
+        </div>
+    </div>
+</div>
 
-    <p>
-        Workflow conseillé : créer d’abord le compte utilisateur, puis créer sa fiche employé.
-    </p>
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card card-kpi p-4">
+            <h5>Masse salariale cumulée</h5>
+            <p class="display-6">{{ payroll_total }}</p>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card card-kpi p-4">
+            <h5>Accès rapides</h5>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                <a href="{% url 'user_list' %}" class="btn btn-dark btn-sm">Utilisateurs</a>
+                <a href="{% url 'employee_list' %}" class="btn btn-primary btn-sm">Employés</a>
+                <a href="{% url 'department_list' %}" class="btn btn-secondary btn-sm">Départements</a>
+                <a href="{% url 'leave_list' %}" class="btn btn-warning btn-sm">Congés</a>
+                <a href="{% url 'attendance_list' %}" class="btn btn-info btn-sm">Présences</a>
+                <a href="{% url 'document_list' %}" class="btn btn-success btn-sm">Documents</a>
+                <a href="{% url 'payroll_list' %}" class="btn btn-danger btn-sm">Paie</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-kpi p-4 mt-4">
+    <h5>Documents récents</h5>
+    <div class="table-responsive">
+        <table class="table table-hover mt-3">
+            <thead>
+                <tr>
+                    <th>Employé</th>
+                    <th>Titre</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in recent_documents %}
+                    <tr>
+                        <td>{{ doc.employee }}</td>
+                        <td>{{ doc.title }}</td>
+                        <td>{{ doc.get_document_type_display }}</td>
+                        <td>{{ doc.uploaded_at }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">Aucun document récent.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

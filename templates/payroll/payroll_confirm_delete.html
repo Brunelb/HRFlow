@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer fiche de paie{% endblock %}
+
+{% block content %}
+    <h1>Supprimer la fiche de paie</h1>
+
+    <p>Es-tu sûr de vouloir supprimer la fiche de paie de <strong>{{ payroll.employee }}</strong> pour <strong>{{ payroll.month }}/{{ payroll.year }}</strong> ?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Oui, supprimer</button>
+    </form>
+
+    <p><a href="{% url 'payroll_list' %}">Annuler</a></p>
+{% endblock %}

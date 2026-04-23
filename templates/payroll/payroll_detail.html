@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Détail fiche de paie{% endblock %}
+
+{% block content %}
+    <h1>Détail de la fiche de paie</h1>
+
+    <p><strong>Employé :</strong> {{ payroll.employee }}</p>
+    <p><strong>Mois :</strong> {{ payroll.month }}</p>
+    <p><strong>Année :</strong> {{ payroll.year }}</p>
+    <p><strong>Salaire de base :</strong> {{ payroll.base_salary }}</p>
+    <p><strong>Bonus :</strong> {{ payroll.bonus }}</p>
+    <p><strong>Déductions :</strong> {{ payroll.deductions }}</p>
+    <p><strong>Salaire net :</strong> {{ payroll.net_salary }}</p>
+    <p><strong>Note :</strong> {{ payroll.note|default:"-" }}</p>
+    <p><strong>Généré par :</strong> {{ payroll.generated_by|default:"-" }}</p>
+    <p><strong>Créé le :</strong> {{ payroll.generated_at }}</p>
+
+    <p><a href="{% url 'payroll_list' %}">Retour</a></p>
+{% endblock %}

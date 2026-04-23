@@ -3,14 +3,43 @@
 {% block title %}Dashboard Employé{% endblock %}
 
 {% block content %}
-    <h1>Dashboard Employé</h1>
-    <p>Bienvenue {{ user.username }}.</p>
+<h1 class="page-title">Mon espace</h1>
+<p class="text-muted">Vue personnelle de vos informations RH.</p>
 
-    <ul>
-        <li><a href="{% url 'leave_list' %}">Mes congés</a></li>
-        <li><a href="{% url 'leave_create' %}">Faire une demande de congé</a></li>
-        <li><a href="{% url 'attendance_list' %}">Mes présences</a></li>
-        <li><a href="{% url 'attendance_create' %}">Pointer aujourd’hui</a></li> 
-        <li><a href="{% url 'document_list' %}">Mes documents</a></li>   
-    </ul>
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Mes congés</h6>
+            <h2>{{ my_leaves }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Congés en attente</h6>
+            <h2>{{ my_pending_leaves }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Mes documents</h6>
+            <h2>{{ my_documents }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-kpi p-3">
+            <h6 class="text-muted">Mes fiches de paie</h6>
+            <h2>{{ my_payrolls }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="card card-kpi p-4">
+    <h5>Accès rapides</h5>
+    <div class="d-flex flex-wrap gap-2 mt-2">
+        <a href="{% url 'leave_list' %}" class="btn btn-warning btn-sm">Mes congés</a>
+        <a href="{% url 'attendance_list' %}" class="btn btn-info btn-sm">Mes présences</a>
+        <a href="{% url 'document_list' %}" class="btn btn-success btn-sm">Mes documents</a>
+        <a href="{% url 'payroll_list' %}" class="btn btn-danger btn-sm">Mes fiches de paie</a>
+    </div>
+</div>
 {% endblock %}
