@@ -26,7 +26,13 @@
                     <td>{{ employee.employee_id }}</td>
                     <td>{{ employee.user.get_full_name|default:employee.user.username }}</td>
                     <td>{{ employee.department.name|default:"Non défini" }}</td>
-                    <td>{{ employee.manager.get_full_name|default:employee.manager.username|default:"Non défini" }}</td>
+                    <td>
+                        {% if employee.manager %}
+                            {{ employee.manager.get_full_name|default:employee.manager.username }}
+                        {% else %}
+                             Non défini
+                        {% endif %}
+                    </td>
                     <td>{{ employee.get_status_display }}</td>
                     <td>
                         <a href="{% url 'employee_detail' employee.pk %}">Voir</a>

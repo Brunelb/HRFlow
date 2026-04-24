@@ -2,6 +2,7 @@ from django import forms
 from .models import Employee
 from accounts.models import User
 
+
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
@@ -32,3 +33,9 @@ class EmployeeForm(forms.ModelForm):
         ).exclude(
             id__in=linked_user_ids
         ).order_by('username')
+
+        self.fields['manager'].queryset = User.objects.filter(
+            role='manager'
+        ).order_by('username')
+
+        self.fields['manager'].required = False

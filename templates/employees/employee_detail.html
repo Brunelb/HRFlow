@@ -12,7 +12,13 @@
     <p><strong>Adresse :</strong> {{ employee.address }}</p>
     <p><strong>Date d'embauche :</strong> {{ employee.hire_date }}</p>
     <p><strong>Département :</strong> {{ employee.department.name|default:"Non défini" }}</p>
-    <p><strong>Manager :</strong> {{ employee.manager.get_full_name|default:employee.manager.username|default:"Non défini" }}</p>
+   <p><strong>Manager :</strong>
+        {% if employee.manager %}
+            {{ employee.manager.get_full_name|default:employee.manager.username }}
+        {% else %}
+            Non défini
+        {% endif %}
+    </p>
     <p><strong>Salaire de base :</strong> {{ employee.base_salary }}</p>
     <p><strong>Statut :</strong> {{ employee.get_status_display }}</p>
 
