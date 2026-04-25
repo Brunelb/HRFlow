@@ -1,15 +1,38 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ title }} - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
+<div class="module-page">
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Enregistrer</button>
-    </form>
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">{{ title }}</h1>
+            <p class="module-subtitle">Renseigner les informations de présence.</p>
+        </div>
+    </div>
 
-    <p><a href="{% url 'attendance_list' %}">Retour</a></p>
+    <div class="module-card form-card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn-green">
+                    Enregistrer
+                </button>
+
+                <a href="{% url 'attendance_list' %}" class="btn-outline-soft">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
 {% endblock %}

@@ -1,51 +1,88 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Employés{% endblock %}
+{% block title %}Employés - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Liste des employés</h1>
+<div class="module-page">
 
-    {% if user.role == 'admin' or user.role == 'hr' %}
-        <a href="{% url 'employee_create' %}">Créer un employé</a>
-    {% endif %}
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Employés</h1>
+            <p class="module-subtitle">Gestion des fiches du personnel et de l’organisation interne.</p>
+        </div>
 
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Matricule</th>
-                <th>Nom</th>
-                <th>Département</th>
-                <th>Manager</th>
-                <th>Statut</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for employee in employees %}
-                <tr>
-                    <td>{{ employee.employee_id }}</td>
-                    <td>{{ employee.user.get_full_name|default:employee.user.username }}</td>
-                    <td>{{ employee.department.name|default:"Non défini" }}</td>
-                    <td>
-                        {% if employee.manager %}
-                            {{ employee.manager.get_full_name|default:employee.manager.username }}
-                        {% else %}
-                             Non défini
-                        {% endif %}
-                    </td>
-                    <td>{{ employee.get_status_display }}</td>
-                    <td>
-                        <a href="{% url 'employee_detail' employee.pk %}">Voir</a>
-                        {% if user.role == 'admin' or user.role == 'hr' %}
-                            | <a href="{% url 'employee_update' employee.pk %}">Modifier</a>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="6">Aucun employé trouvé.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% if user.role == 'admin' or user.role == 'hr' %}
+            <a href="{% url 'employee_create' %}" class="btn-green">
+                Nouvel employé
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="module-card">
+        <div class="table-responsive">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Matricule</th>
+                        <th>Nom</th>
+                        <th>Département</th>
+                        <th>Manager</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for employee in employees %}
+                        <tr>
+                            <td><strong>{{ employee.employee_id }}</strong></td>
+
+                            <td>{{ employee.user.get_full_name|default:employee.user.username }}</td>
+
+                            <td>
+                                {% if employee.department %}
+                                    {{ employee.department.name }}
+                                {% else %}
+                                    <span class="text-muted">Non défini</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if employee.manager %}
+                                    {{ employee.manager.get_full_name|default:employee.manager.username }}
+                                {% else %}
+                                    <span class="text-muted">Non défini</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <span class="badge-soft-dark">{{ employee.get_status_display }}</span>
+                            </td>
+
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'employee_detail' employee.pk %}" class="btn-outline-soft">Voir</a>
+
+                                    {% if user.role == 'admin' or user.role == 'hr' %}
+                                        <a href="{% url 'employee_update' employee.pk %}" class="btn-dark-soft">Modifier</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="empty-state">Aucun employé trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

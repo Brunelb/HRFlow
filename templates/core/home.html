@@ -1,15 +1,205 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Accueil - HRFlow{% endblock %}
 
 {% block content %}
-    <h1>Bienvenue sur HRFlow</h1>
-    <p>Système de gestion du personnel d'entreprise.</p>
+<section class="position-relative overflow-hidden rounded-4 bg-dark text-white p-4 p-lg-5 mb-5 shadow-sm">
+    <div class="position-absolute top-0 end-0 opacity-25">
+        <i class="ti ti-users-group" style="font-size: 18rem;"></i>
+    </div>
 
-    {% if user.is_authenticated %}
-        <p>Connecté en tant que {{ user.username }} ({{ user.role }})</p>
-        <a href="{% url 'role_redirect' %}">Accéder au dashboard</a>
-    {% else %}
-        <a href="{% url 'login' %}">Se connecter</a>
-    {% endif %}
+    <div class="row align-items-center position-relative">
+        <div class="col-lg-7">
+            <span class="badge bg-success-subtle text-success mb-3 px-3 py-2">
+                Plateforme RH sécurisée
+            </span>
+
+            <h1 class="display-4 fw-bold mb-3">
+                Pilotez la gestion du personnel avec HRFlow
+            </h1>
+
+            <p class="lead text-white-50 mb-4">
+                Centralisez les employés, rôles, congés, présences, documents RH et fiches de paie
+                dans une application interne claire, structurée et sécurisée.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'role_redirect' %}" class="btn btn-success btn-lg px-4">
+                        Accéder au dashboard
+                    </a>
+                    <span class="btn btn-outline-light btn-lg disabled">
+                        {{ user.username }} — {{ user.get_role_display }}
+                    </span>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-success btn-lg px-4">
+                        Se connecter
+                    </a>
+                    <span class="btn btn-outline-light btn-lg disabled">
+                        Accès réservé
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-5 mt-5 mt-lg-0">
+            <div class="card border-0 shadow-lg bg-white text-dark rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Vue rapide du système</h5>
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="p-3 rounded-4 bg-light h-100">
+                                <i class="ti ti-id-badge fs-2 text-primary"></i>
+                                <h6 class="mt-3 mb-1">Personnel</h6>
+                                <small class="text-muted">Fiches employés</small>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="p-3 rounded-4 bg-light h-100">
+                                <i class="ti ti-user-shield fs-2 text-success"></i>
+                                <h6 class="mt-3 mb-1">Rôles</h6>
+                                <small class="text-muted">Admin, RH, manager</small>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="p-3 rounded-4 bg-light h-100">
+                                <i class="ti ti-calendar-check fs-2 text-warning"></i>
+                                <h6 class="mt-3 mb-1">Congés</h6>
+                                <small class="text-muted">Workflow validation</small>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="p-3 rounded-4 bg-light h-100">
+                                <i class="ti ti-cash fs-2 text-danger"></i>
+                                <h6 class="mt-3 mb-1">Paie</h6>
+                                <small class="text-muted">Suivi salarial</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <small class="text-muted">Sécurité</small>
+                            <h6 class="mb-0">Accès par permissions</h6>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Actif</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4">
+                <div class="rounded-4 bg-primary-subtle text-primary d-inline-flex p-3 mb-3">
+                    <i class="ti ti-users fs-2"></i>
+                </div>
+                <h5>Employés</h5>
+                <p class="text-muted mb-0">
+                    Création des fiches, rattachement aux départements et suivi du statut.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4">
+                <div class="rounded-4 bg-success-subtle text-success d-inline-flex p-3 mb-3">
+                    <i class="ti ti-calendar-time fs-2"></i>
+                </div>
+                <h5>Congés</h5>
+                <p class="text-muted mb-0">
+                    Demandes, validation manager, validation RH et suivi des statuts.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4">
+                <div class="rounded-4 bg-warning-subtle text-warning d-inline-flex p-3 mb-3">
+                    <i class="ti ti-clock-hour-4 fs-2"></i>
+                </div>
+                <h5>Présences</h5>
+                <p class="text-muted mb-0">
+                    Pointages, retards, absences et calcul des heures travaillées.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4">
+                <div class="rounded-4 bg-danger-subtle text-danger d-inline-flex p-3 mb-3">
+                    <i class="ti ti-file-dollar fs-2"></i>
+                </div>
+                <h5>Paie</h5>
+                <p class="text-muted mb-0">
+                    Salaires, bonus, déductions, historique et fiches mensuelles.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="card border-0 shadow-sm rounded-4 mb-5">
+    <div class="card-body p-4 p-lg-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-5">
+                <span class="badge bg-primary-subtle text-primary mb-3">Workflow métier</span>
+                <h2 class="fw-bold mb-3">Un fonctionnement clair selon les rôles</h2>
+                <p class="text-muted mb-0">
+                    HRFlow distingue les permissions applicatives et les fiches du personnel.
+                    Un RH ou un manager peut aussi avoir une fiche employé, tout en conservant
+                    ses droits spécifiques.
+                </p>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <strong>Admin</strong>
+                            <p class="text-muted small mb-0">Gestion complète des utilisateurs et accès globaux.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <strong>RH</strong>
+                            <p class="text-muted small mb-0">Gestion du personnel, documents, congés et paie.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <strong>Manager</strong>
+                            <p class="text-muted small mb-0">Suivi de son équipe et validation des congés.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <strong>Employé</strong>
+                            <p class="text-muted small mb-0">Consultation de ses données, congés et documents.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
