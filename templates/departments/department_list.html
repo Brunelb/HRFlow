@@ -1,26 +1,70 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Départements{% endblock %}
+{% block title %}Départements - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Liste des départements</h1>
+<div class="module-page">
 
-    <a href="{% url 'department_create' %}">Créer un département</a>
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Départements</h1>
+            <p class="module-subtitle">Organisation interne de l’entreprise.</p>
+        </div>
 
-    <ul>
-        {% for department in departments %}
-            <li>
-                <strong>{{ department.name }}</strong>
-                - Manager :
-                {% if department.manager %}
-                    {{ department.manager.get_full_name|default:department.manager.username }}
-                {% else %}
-                    Non défini
-                {% endif %}
-                - <a href="{% url 'department_update' department.pk %}">Modifier</a>
-            </li>
-        {% empty %}
-            <li>Aucun département trouvé.</li>
-        {% endfor %}
-    </ul>
+        <a href="{% url 'department_create' %}" class="btn-green">
+            Nouveau département
+        </a>
+    </div>
+
+    <div class="module-card">
+        <div class="table-responsive">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Manager</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for department in departments %}
+                        <tr>
+                            <td><strong>{{ department.name }}</strong></td>
+
+                            <td>{{ department.description|default:"-" }}</td>
+
+                            <td>
+                                {% if department.manager %}
+                                    {{ department.manager.get_full_name|default:department.manager.username }}
+                                {% else %}
+                                    <span class="text-muted">Non défini</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'department_update' department.pk %}" class="btn-dark-soft">
+                                        Modifier
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-state">Aucun département trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

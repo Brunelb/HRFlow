@@ -1,21 +1,67 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Détail document{% endblock %}
+{% block title %}Détail document - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Détail du document</h1>
+<div class="module-page">
 
-    <p><strong>Employé :</strong> {{ document.employee }}</p>
-    <p><strong>Titre :</strong> {{ document.title }}</p>
-    <p><strong>Type :</strong> {{ document.get_document_type_display }}</p>
-    <p><strong>Description :</strong> {{ document.description|default:"-" }}</p>
-    <p><strong>Ajouté par :</strong> {{ document.uploaded_by|default:"-" }}</p>
-    <p><strong>Ajouté le :</strong> {{ document.uploaded_at }}</p>
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Détail document</h1>
+            <p class="module-subtitle">{{ document.title }}</p>
+        </div>
 
-    <p>
-        <strong>Fichier :</strong>
-        <a href="{{ document.file.url }}" target="_blank">Ouvrir le document</a>
-    </p>
+        <a href="{% url 'document_list' %}" class="btn-outline-soft">
+            Retour
+        </a>
+    </div>
 
-    <p><a href="{% url 'document_list' %}">Retour</a></p>
+    <div class="module-card">
+        <div class="detail-row">
+            <strong>Employé :</strong> {{ document.employee }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Titre :</strong> {{ document.title }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Type :</strong> {{ document.get_document_type_display }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Description :</strong> {{ document.description|default:"-" }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Ajouté par :</strong> {{ document.uploaded_by|default:"-" }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Ajouté le :</strong> {{ document.uploaded_at }}
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap mt-4">
+            <a href="{{ document.file.url }}" target="_blank" class="btn-green">
+                Ouvrir le document
+            </a>
+
+            {% if user.role == 'hr' or user.role == 'admin' %}
+                <a href="{% url 'document_update' document.pk %}" class="btn-dark-soft">
+                    Modifier
+                </a>
+
+                <a href="{% url 'document_delete' document.pk %}" class="btn-danger-soft">
+                    Supprimer
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
 {% endblock %}

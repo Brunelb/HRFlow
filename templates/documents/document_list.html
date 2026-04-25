@@ -1,47 +1,78 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Documents{% endblock %}
+{% block title %}Documents - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Documents</h1>
+<div class="module-page">
 
-    {% if user.role == 'hr' or user.role == 'admin' %}
-        <p><a href="{% url 'document_create' %}">Ajouter un document</a></p>
-    {% endif %}
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Documents</h1>
+            <p class="module-subtitle">Gestion des documents RH liés au personnel.</p>
+        </div>
 
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Employé</th>
-                <th>Titre</th>
-                <th>Type</th>
-                <th>Ajouté le</th>
-                <th>Ajouté par</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for document in documents %}
-                <tr>
-                    <td>{{ document.employee }}</td>
-                    <td>{{ document.title }}</td>
-                    <td>{{ document.get_document_type_display }}</td>
-                    <td>{{ document.uploaded_at }}</td>
-                    <td>{{ document.uploaded_by|default:"-" }}</td>
-                    <td>
-                        <a href="{% url 'document_detail' document.pk %}">Voir</a>
+        {% if user.role == 'hr' or user.role == 'admin' %}
+            <a href="{% url 'document_create' %}" class="btn-green">
+                Ajouter un document
+            </a>
+        {% endif %}
+    </div>
 
-                        {% if user.role == 'hr' or user.role == 'admin' %}
-                            | <a href="{% url 'document_update' document.pk %}">Modifier</a>
-                            | <a href="{% url 'document_delete' document.pk %}">Supprimer</a>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="6">Aucun document trouvé.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="module-card">
+        <div class="table-responsive">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Employé</th>
+                        <th>Titre</th>
+                        <th>Type</th>
+                        <th>Ajouté le</th>
+                        <th>Ajouté par</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for document in documents %}
+                        <tr>
+                            <td>{{ document.employee }}</td>
+                            <td><strong>{{ document.title }}</strong></td>
+                            <td><span class="badge-soft-dark">{{ document.get_document_type_display }}</span></td>
+                            <td>{{ document.uploaded_at }}</td>
+                            <td>{{ document.uploaded_by|default:"-" }}</td>
+
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'document_detail' document.pk %}" class="btn-outline-soft">
+                                        Voir
+                                    </a>
+
+                                    {% if user.role == 'hr' or user.role == 'admin' %}
+                                        <a href="{% url 'document_update' document.pk %}" class="btn-dark-soft">
+                                            Modifier
+                                        </a>
+
+                                        <a href="{% url 'document_delete' document.pk %}" class="btn-danger-soft">
+                                            Supprimer
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="empty-state">Aucun document trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

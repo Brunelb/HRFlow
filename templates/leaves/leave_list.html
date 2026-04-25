@@ -1,52 +1,91 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Demandes de congé{% endblock %}
+{% block title %}Congés - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Demandes de congé</h1>
+<div class="module-page">
 
-    {% if user.role == 'employee' or user.role == 'manager' or user.role == 'hr' %}
-        <p><a href="{% url 'leave_create' %}">Faire une demande de congé</a></p>
-    {% endif %}
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Demandes de congé</h1>
+            <p class="module-subtitle">Suivi des demandes, validations manager et validations RH.</p>
+        </div>
 
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Employé</th>
-                <th>Type</th>
-                <th>Date début</th>
-                <th>Date fin</th>
-                <th>Statut</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for leave in leaves %}
-                <tr>
-                    <td>{{ leave.employee }}</td>
-                    <td>{{ leave.get_leave_type_display }}</td>
-                    <td>{{ leave.start_date }}</td>
-                    <td>{{ leave.end_date }}</td>
-                    <td>{{ leave.get_status_display }}</td>
-                    <td>
-                        <a href="{% url 'leave_detail' leave.pk %}">Voir</a>
+        {% if user.role == 'employee' or user.role == 'manager' or user.role == 'hr' %}
+            <a href="{% url 'leave_create' %}" class="btn-green">
+                Nouvelle demande
+            </a>
+        {% endif %}
+    </div>
 
-                        {% if user.role == 'manager' and leave.status == 'pending_manager' %}
-                            | <a href="{% url 'manager_leave_approval' leave.pk %}">Traiter</a>
-                        {% endif %}
+    <div class="module-card">
+        <div class="table-responsive">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Employé</th>
+                        <th>Type</th>
+                        <th>Début</th>
+                        <th>Fin</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
 
-                        {% if user.role == 'hr' or user.role == 'admin' %}
-                            {% if leave.status == 'pending_hr' %}
-                                | <a href="{% url 'hr_leave_approval' leave.pk %}">Valider RH</a>
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="6">Aucune demande trouvée.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                <tbody>
+                    {% for leave in leaves %}
+                        <tr>
+                            <td>{{ leave.employee }}</td>
+                            <td>{{ leave.get_leave_type_display }}</td>
+                            <td>{{ leave.start_date }}</td>
+                            <td>{{ leave.end_date }}</td>
+
+                            <td>
+                                {% if leave.status == 'approved' %}
+                                    <span class="badge-soft-green">{{ leave.get_status_display }}</span>
+                                {% elif leave.status == 'rejected' %}
+                                    <span class="badge-soft-red">{{ leave.get_status_display }}</span>
+                                {% else %}
+                                    <span class="badge-soft-dark">{{ leave.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'leave_detail' leave.pk %}" class="btn-outline-soft">
+                                        Voir
+                                    </a>
+
+                                    {% if user.role == 'manager' and leave.status == 'pending_manager' %}
+                                        <a href="{% url 'manager_leave_approval' leave.pk %}" class="btn-dark-soft">
+                                            Traiter
+                                        </a>
+                                    {% endif %}
+
+                                    {% if user.role == 'hr' or user.role == 'admin' %}
+                                        {% if leave.status == 'pending_hr' %}
+                                            <a href="{% url 'hr_leave_approval' leave.pk %}" class="btn-green">
+                                                Validation RH
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="empty-state">Aucune demande de congé trouvée.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

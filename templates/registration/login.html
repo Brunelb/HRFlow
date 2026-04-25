@@ -1,17 +1,78 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Connexion{% endblock %}
+{% block title %}Connexion - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/login.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h2>Connexion</h2>
+<section class="login-section">
+    <div class="login-shell">
+        <div class="login-left">
+            <span class="login-badge">Accès sécurisé</span>
 
-    {% if form.errors %}
-        <p>Nom d'utilisateur ou mot de passe incorrect.</p>
-    {% endif %}
+            <h1>Connexion à HRFlow</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Se connecter</button>
-    </form>
+            <p>
+                Connectez-vous pour accéder à votre espace selon votre rôle :
+                administrateur, RH, manager ou employé.
+            </p>
+
+            <div class="login-highlights">
+                <div>
+                    <strong>Rôles contrôlés</strong>
+                    <span>Chaque compte possède des permissions spécifiques.</span>
+                </div>
+
+                <div>
+                    <strong>Données protégées</strong>
+                    <span>Les modules sensibles restent limités aux profils autorisés.</span>
+                </div>
+
+                <div>
+                    <strong>Workflow interne</strong>
+                    <span>Les comptes sont créés uniquement par l’administrateur.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-right">
+            <div class="login-card">
+                <h2>Connexion</h2>
+                <p class="login-subtitle">Entrez vos identifiants pour continuer.</p>
+
+                {% if form.errors %}
+                    <div class="login-alert">
+                        Nom d’utilisateur ou mot de passe incorrect.
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="login-field">
+                        <label for="id_username">Nom d’utilisateur</label>
+                        <input type="text" name="username" id="id_username" required autofocus>
+                    </div>
+
+                    <div class="login-field">
+                        <label for="id_password">Mot de passe</label>
+                        <input type="password" name="password" id="id_password" required>
+                    </div>
+
+                    <button type="submit" class="login-submit">
+                        Se connecter
+                    </button>
+                </form>
+
+                <p class="login-note">
+                    Aucun compte ne peut être créé publiquement.
+                    Les accès sont gérés par l’administrateur.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

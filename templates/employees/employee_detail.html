@@ -1,34 +1,84 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Détail employé{% endblock %}
+{% block title %}Détail employé - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Détail de l'employé</h1>
+<div class="module-page">
 
-    <p><strong>Matricule :</strong> {{ employee.employee_id }}</p>
-    <p><strong>Nom :</strong> {{ employee.user.get_full_name|default:employee.user.username }}</p>
-    <p><strong>Email :</strong> {{ employee.user.email }}</p>
-    <p><strong>Téléphone :</strong> {{ employee.phone }}</p>
-    <p><strong>Adresse :</strong> {{ employee.address }}</p>
-    <p><strong>Date d'embauche :</strong> {{ employee.hire_date }}</p>
-    <p><strong>Département :</strong> {{ employee.department.name|default:"Non défini" }}</p>
-   <p><strong>Manager :</strong>
-        {% if employee.manager %}
-            {{ employee.manager.get_full_name|default:employee.manager.username }}
-        {% else %}
-            Non défini
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Détail employé</h1>
+            <p class="module-subtitle">{{ employee.employee_id }}</p>
+        </div>
+
+        {% if user.role == 'admin' or user.role == 'hr' %}
+            <a href="{% url 'employee_update' employee.pk %}" class="btn-green">Modifier</a>
         {% endif %}
-    </p>
-    <p><strong>Salaire de base :</strong> {{ employee.base_salary }}</p>
-    <p><strong>Statut :</strong> {{ employee.get_status_display }}</p>
+    </div>
 
-    {% if employee.profile_photo %}
-        <img src="{{ employee.profile_photo.url }}" alt="Photo de profil" width="120">
-    {% endif %}
+    <div class="module-card">
+        <div class="detail-grid">
+            <div>
+                {% if employee.profile_photo %}
+                    <img src="{{ employee.profile_photo.url }}" alt="Photo" class="detail-photo">
+                {% else %}
+                    <div class="detail-avatar">
+                        <i class="ti ti-user"></i>
+                    </div>
+                {% endif %}
+            </div>
 
-    {% if user.role == 'admin' or user.role == 'hr' %}
-        <p><a href="{% url 'employee_update' employee.pk %}">Modifier</a></p>
-    {% endif %}
+            <div>
+                <h3 class="mb-1">{{ employee.user.get_full_name|default:employee.user.username }}</h3>
+                <p class="text-muted mb-4">{{ employee.user.email }}</p>
 
-    <p><a href="{% url 'employee_list' %}">Retour à la liste</a></p>
+                <div class="detail-row">
+                    <strong>Téléphone :</strong> {{ employee.phone|default:"-" }}
+                </div>
+
+                <div class="detail-row">
+                    <strong>Adresse :</strong> {{ employee.address|default:"-" }}
+                </div>
+
+                <div class="detail-row">
+                    <strong>Date d’embauche :</strong> {{ employee.hire_date }}
+                </div>
+
+                <div class="detail-row">
+                    <strong>Département :</strong>
+                    {% if employee.department %}
+                        {{ employee.department.name }}
+                    {% else %}
+                        Non défini
+                    {% endif %}
+                </div>
+
+                <div class="detail-row">
+                    <strong>Manager :</strong>
+                    {% if employee.manager %}
+                        {{ employee.manager.get_full_name|default:employee.manager.username }}
+                    {% else %}
+                        Non défini
+                    {% endif %}
+                </div>
+
+                <div class="detail-row">
+                    <strong>Salaire de base :</strong> {{ employee.base_salary }}
+                </div>
+
+                <div class="detail-row">
+                    <strong>Statut :</strong> {{ employee.get_status_display }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'employee_list' %}" class="btn-outline-soft mt-4 d-inline-block">Retour</a>
+
+</div>
 {% endblock %}

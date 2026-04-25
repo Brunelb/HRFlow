@@ -1,48 +1,80 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Dashboard RH{% endblock %}
+{% block title %}Dashboard RH - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/dashboard.css' %}">
+{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Dashboard RH</h1>
-<p class="text-muted">Suivi des opérations RH.</p>
+<div class="dashboard-page">
 
-<div class="row g-4 mb-4">
-    <div class="col-md-4">
-        <div class="card card-kpi p-3">
-            <h6 class="text-muted">Employés</h6>
+    <div class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Dashboard RH</h1>
+            <p class="dashboard-subtitle">
+                Suivi des employés, congés, présences, documents et opérations RH.
+            </p>
+        </div>
+
+        <span class="dashboard-badge">
+            Accès RH
+        </span>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <span>Employés</span>
             <h2>{{ total_employees }}</h2>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card card-kpi p-3">
-            <h6 class="text-muted">Congés à traiter</h6>
+
+        <div class="kpi-card">
+            <span>Congés à traiter</span>
             <h2>{{ pending_hr_leaves }}</h2>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card card-kpi p-3">
-            <h6 class="text-muted">Absences du jour</h6>
+
+        <div class="kpi-card">
+            <span>Absences du jour</span>
             <h2>{{ today_absences }}</h2>
         </div>
-    </div>
-</div>
 
-<div class="card card-kpi p-4 mb-4">
-    <h5>Accès rapides</h5>
-    <div class="d-flex flex-wrap gap-2 mt-2">
-        <a href="{% url 'employee_list' %}" class="btn btn-primary btn-sm">Employés</a>
-        <a href="{% url 'department_list' %}" class="btn btn-secondary btn-sm">Départements</a>
-        <a href="{% url 'leave_list' %}" class="btn btn-warning btn-sm">Congés</a>
-        <a href="{% url 'attendance_list' %}" class="btn btn-info btn-sm">Présences</a>
-        <a href="{% url 'document_list' %}" class="btn btn-success btn-sm">Documents</a>
-        <a href="{% url 'payroll_list' %}" class="btn btn-danger btn-sm">Paie</a>
+        <div class="kpi-card">
+            <span>Documents récents</span>
+            <h2>{{ recent_documents|length }}</h2>
+        </div>
     </div>
-</div>
 
-<div class="card card-kpi p-4">
-    <h5>Documents récents</h5>
-    <div class="table-responsive">
-        <table class="table table-hover mt-3">
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <h3>Accès rapides</h3>
+
+            <div class="quick-actions">
+                <a href="{% url 'employee_list' %}" class="quick-action blue">Employés</a>
+                <a href="{% url 'department_list' %}" class="quick-action gray">Départements</a>
+                <a href="{% url 'leave_list' %}" class="quick-action orange">Congés</a>
+                <a href="{% url 'attendance_list' %}" class="quick-action cyan">Présences</a>
+                <a href="{% url 'document_list' %}" class="quick-action">Documents</a>
+                <a href="{% url 'payroll_list' %}" class="quick-action red">Paie</a>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Actions RH</h3>
+
+            <div class="quick-actions">
+                <a href="{% url 'employee_create' %}" class="quick-action blue">Créer employé</a>
+                <a href="{% url 'document_create' %}" class="quick-action">Ajouter document</a>
+                <a href="{% url 'attendance_admin_create' %}" class="quick-action cyan">Ajouter présence</a>
+                <a href="{% url 'payroll_create' %}" class="quick-action red">Créer fiche paie</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Documents récents</h3>
+
+        <table class="dashboard-table">
             <thead>
                 <tr>
                     <th>Employé</th>
@@ -50,6 +82,7 @@
                     <th>Date</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for doc in recent_documents %}
                     <tr>
@@ -59,11 +92,12 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="3">Aucun document récent.</td>
+                        <td colspan="3" class="empty-row">Aucun document récent.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
 </div>
 {% endblock %}

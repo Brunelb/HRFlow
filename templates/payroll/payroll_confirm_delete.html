@@ -1,16 +1,38 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Supprimer fiche de paie{% endblock %}
+{% block title %}Supprimer fiche de paie - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Supprimer la fiche de paie</h1>
+<div class="module-page">
 
-    <p>Es-tu sûr de vouloir supprimer la fiche de paie de <strong>{{ payroll.employee }}</strong> pour <strong>{{ payroll.month }}/{{ payroll.year }}</strong> ?</p>
+    <div class="module-card form-card text-center">
+        <h1 class="module-title">Supprimer cette fiche de paie ?</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Oui, supprimer</button>
-    </form>
+        <p class="module-subtitle mb-4">
+            Cette action supprimera la fiche de paie de
+            <strong>{{ payroll.employee }}</strong>
+            pour <strong>{{ payroll.get_month_display }} {{ payroll.year }}</strong>.
+        </p>
 
-    <p><a href="{% url 'payroll_list' %}">Annuler</a></p>
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <button type="submit" class="btn-danger-soft">
+                    Oui, supprimer
+                </button>
+
+                <a href="{% url 'payroll_list' %}" class="btn-outline-soft">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
 {% endblock %}
