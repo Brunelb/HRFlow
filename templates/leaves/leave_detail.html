@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Détail congé - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="module-page">
+
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Détail de la demande</h1>
+            <p class="module-subtitle">Informations complètes sur la demande de congé.</p>
+        </div>
+
+        <a href="{% url 'leave_list' %}" class="btn-outline-soft">
+            Retour
+        </a>
+    </div>
+
+    <div class="module-card">
+        <div class="detail-row">
+            <strong>Employé :</strong> {{ leave.employee }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Type :</strong> {{ leave.get_leave_type_display }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Date début :</strong> {{ leave.start_date }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Date fin :</strong> {{ leave.end_date }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Motif :</strong> {{ leave.reason }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Statut :</strong>
+            {% if leave.status == 'approved' %}
+                <span class="badge-soft-green">{{ leave.get_status_display }}</span>
+            {% elif leave.status == 'rejected' %}
+                <span class="badge-soft-red">{{ leave.get_status_display }}</span>
+            {% else %}
+                <span class="badge-soft-dark">{{ leave.get_status_display }}</span>
+            {% endif %}
+        </div>
+
+        <div class="detail-row">
+            <strong>Commentaire manager :</strong> {{ leave.manager_comment|default:"-" }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Commentaire RH :</strong> {{ leave.hr_comment|default:"-" }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Créée le :</strong> {{ leave.created_at }}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

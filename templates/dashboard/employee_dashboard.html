@@ -1,9 +1,62 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Dashboard Employé{% endblock %}
+{% block title %}Dashboard Employé - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/dashboard.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Dashboard Employé</h1>
-    <p>Bienvenue {{ user.username }}.</p>
-    <p>Vous pouvez consulter vos informations personnelles.</p>
+<div class="dashboard-page">
+
+    <div class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Mon espace</h1>
+            <p class="dashboard-subtitle">
+                Consultation de vos informations personnelles, congés, présences et documents RH.
+            </p>
+        </div>
+
+        <span class="dashboard-badge">
+            Espace employé
+        </span>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <span>Mes congés</span>
+            <h2>{{ my_leaves }}</h2>
+        </div>
+
+        <div class="kpi-card">
+            <span>Congés en attente</span>
+            <h2>{{ my_pending_leaves }}</h2>
+        </div>
+
+        <div class="kpi-card">
+            <span>Mes documents</span>
+            <h2>{{ my_documents }}</h2>
+        </div>
+
+        <div class="kpi-card">
+            <span>Fiches de paie</span>
+            <h2>{{ my_payrolls }}</h2>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Accès rapides</h3>
+
+        <div class="quick-actions">
+            <a href="{% url 'leave_list' %}" class="quick-action orange">Mes congés</a>
+            <a href="{% url 'leave_create' %}" class="quick-action blue">Demander congé</a>
+            <a href="{% url 'attendance_list' %}" class="quick-action cyan">Mes présences</a>
+            <a href="{% url 'attendance_create' %}" class="quick-action gray">Pointer</a>
+            <a href="{% url 'document_list' %}" class="quick-action">Mes documents</a>
+            <a href="{% url 'payroll_list' %}" class="quick-action red">Mes fiches de paie</a>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

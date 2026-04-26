@@ -1,19 +1,100 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Dashboard Admin{% endblock %}
+{% block title %}Dashboard Admin - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/dashboard.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Dashboard Admin</h1>
-    <p>Bienvenue {{ user.username }}.</p>
+<div class="dashboard-page">
 
-    <ul>
-        <li><a href="{% url 'user_list' %}">Gérer les utilisateurs</a></li>
-        <li><a href="{% url 'employee_list' %}">Gérer les employés</a></li>
-        <li><a href="{% url 'employee_create' %}">Créer une fiche employé</a></li>
-        <li><a href="{% url 'department_list' %}">Gérer les départements</a></li>
-    </ul>
+    <div class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Dashboard Admin</h1>
+            <p class="dashboard-subtitle">
+                Vue globale de la plateforme RH et suivi des principaux indicateurs.
+            </p>
+        </div>
 
-    <p>
-        Workflow conseillé : créer d’abord le compte utilisateur, puis créer sa fiche employé.
-    </p>
+        <span class="dashboard-badge">
+            Accès administrateur
+        </span>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <span>Employés</span>
+            <h2>{{ total_employees }}</h2>
+        </div>
+
+        <div class="kpi-card">
+            <span>Départements</span>
+            <h2>{{ total_departments }}</h2>
+        </div>
+
+        <div class="kpi-card">
+            <span>Congés en attente</span>
+            <h2>{{ pending_leaves }}</h2>
+        </div>
+
+        <div class="kpi-card">
+            <span>Absences du jour</span>
+            <h2>{{ today_absences }}</h2>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <h3>Masse salariale cumulée</h3>
+            <p class="payroll-amount">{{ payroll_total }}</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Accès rapides</h3>
+
+            <div class="quick-actions">
+                <a href="{% url 'user_list' %}" class="quick-action secondary">Utilisateurs</a>
+                <a href="{% url 'employee_list' %}" class="quick-action blue">Employés</a>
+                <a href="{% url 'department_list' %}" class="quick-action gray">Départements</a>
+                <a href="{% url 'leave_list' %}" class="quick-action orange">Congés</a>
+                <a href="{% url 'attendance_list' %}" class="quick-action cyan">Présences</a>
+                <a href="{% url 'document_list' %}" class="quick-action">Documents</a>
+                <a href="{% url 'payroll_list' %}" class="quick-action red">Paie</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Documents récents</h3>
+
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Employé</th>
+                    <th>Titre</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for doc in recent_documents %}
+                    <tr>
+                        <td>{{ doc.employee }}</td>
+                        <td>{{ doc.title }}</td>
+                        <td>{{ doc.get_document_type_display }}</td>
+                        <td>{{ doc.uploaded_at }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="empty-row">Aucun document récent.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
 {% endblock %}

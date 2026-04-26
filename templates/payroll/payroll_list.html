@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Paie - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="module-page">
+
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Fiches de paie</h1>
+            <p class="module-subtitle">Suivi des salaires, bonus, déductions et fiches mensuelles.</p>
+        </div>
+
+        {% if user.role == 'hr' or user.role == 'admin' %}
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'salary_history_list' %}" class="btn-outline-soft">
+                    Historique salaires
+                </a>
+
+                <a href="{% url 'payroll_create' %}" class="btn-green">
+                    Nouvelle fiche
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="module-card">
+        <div class="table-responsive">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Employé</th>
+                        <th>Mois</th>
+                        <th>Année</th>
+                        <th>Salaire base</th>
+                        <th>Bonus</th>
+                        <th>Déductions</th>
+                        <th>Net</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for payroll in payrolls %}
+                        <tr>
+                            <td>{{ payroll.employee }}</td>
+                            <td>{{ payroll.get_month_display }}</td>
+                            <td>{{ payroll.year }}</td>
+                            <td>{{ payroll.base_salary }}</td>
+                            <td>{{ payroll.bonus }}</td>
+                            <td>{{ payroll.deductions }}</td>
+                            <td><strong>{{ payroll.net_salary }}</strong></td>
+
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'payroll_detail' payroll.pk %}" class="btn-outline-soft">
+                                        Voir
+                                    </a>
+
+                                    {% if user.role == 'hr' or user.role == 'admin' %}
+                                        <a href="{% url 'payroll_update' payroll.pk %}" class="btn-dark-soft">
+                                            Modifier
+                                        </a>
+
+                                        <a href="{% url 'payroll_delete' payroll.pk %}" class="btn-danger-soft">
+                                            Supprimer
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" class="empty-state">Aucune fiche de paie trouvée.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Supprimer document - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="module-page">
+
+    <div class="module-card form-card text-center">
+        <h1 class="module-title">Supprimer ce document ?</h1>
+
+        <p class="module-subtitle mb-4">
+            Le document <strong>{{ document.title }}</strong> sera supprimé définitivement.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <button type="submit" class="btn-danger-soft">
+                    Oui, supprimer
+                </button>
+
+                <a href="{% url 'document_list' %}" class="btn-outline-soft">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

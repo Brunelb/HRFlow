@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Détail paie - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="module-page">
+
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Détail fiche de paie</h1>
+            <p class="module-subtitle">
+                {{ payroll.employee }} — {{ payroll.get_month_display }} {{ payroll.year }}
+            </p>
+        </div>
+
+        <a href="{% url 'payroll_list' %}" class="btn-outline-soft">
+            Retour
+        </a>
+    </div>
+
+    <div class="module-card">
+        <div class="detail-row">
+            <strong>Employé :</strong> {{ payroll.employee }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Période :</strong> {{ payroll.get_month_display }} {{ payroll.year }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Salaire de base :</strong> {{ payroll.base_salary }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Bonus :</strong> {{ payroll.bonus }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Déductions :</strong> {{ payroll.deductions }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Salaire net :</strong> <strong>{{ payroll.net_salary }}</strong>
+        </div>
+
+        <div class="detail-row">
+            <strong>Note :</strong> {{ payroll.note|default:"-" }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Généré par :</strong> {{ payroll.generated_by|default:"-" }}
+        </div>
+
+        <div class="detail-row">
+            <strong>Généré le :</strong> {{ payroll.generated_at }}
+        </div>
+
+        {% if user.role == 'hr' or user.role == 'admin' %}
+            <div class="d-flex gap-2 flex-wrap mt-4">
+                <a href="{% url 'payroll_update' payroll.pk %}" class="btn-dark-soft">
+                    Modifier
+                </a>
+
+                <a href="{% url 'payroll_delete' payroll.pk %}" class="btn-danger-soft">
+                    Supprimer
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

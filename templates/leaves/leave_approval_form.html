@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="module-page">
+
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">{{ title }}</h1>
+            <p class="module-subtitle">Analyser la demande et enregistrer une décision.</p>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="module-card">
+            <h3 class="mb-4">Résumé de la demande</h3>
+
+            <div class="detail-row">
+                <strong>Employé :</strong> {{ leave.employee }}
+            </div>
+
+            <div class="detail-row">
+                <strong>Type :</strong> {{ leave.get_leave_type_display }}
+            </div>
+
+            <div class="detail-row">
+                <strong>Début :</strong> {{ leave.start_date }}
+            </div>
+
+            <div class="detail-row">
+                <strong>Fin :</strong> {{ leave.end_date }}
+            </div>
+
+            <div class="detail-row">
+                <strong>Motif :</strong> {{ leave.reason }}
+            </div>
+        </div>
+
+        <div class="module-card form-card">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn-green">
+                        Valider la décision
+                    </button>
+
+                    <a href="{% url 'leave_list' %}" class="btn-outline-soft">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

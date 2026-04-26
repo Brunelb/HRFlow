@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Présences - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="module-page">
+
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Présences</h1>
+            <p class="module-subtitle">Suivi des pointages, retards, absences et heures travaillées.</p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            {% if user.role == 'employee' or user.role == 'manager' or user.role == 'hr' %}
+                <a href="{% url 'attendance_create' %}" class="btn-green">
+                    Enregistrer ma présence
+                </a>
+            {% endif %}
+
+            {% if user.role == 'hr' or user.role == 'admin' %}
+                <a href="{% url 'attendance_admin_create' %}" class="btn-outline-soft">
+                    Ajouter pour un employé
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="module-card">
+        <div class="table-responsive">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Employé</th>
+                        <th>Date</th>
+                        <th>Arrivée</th>
+                        <th>Départ</th>
+                        <th>Statut</th>
+                        <th>Heures</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for attendance in attendances %}
+                        <tr>
+                            <td>{{ attendance.employee }}</td>
+                            <td>{{ attendance.date }}</td>
+                            <td>{{ attendance.check_in|default:"-" }}</td>
+                            <td>{{ attendance.check_out|default:"-" }}</td>
+
+                            <td>
+                                {% if attendance.status == 'present' %}
+                                    <span class="badge-soft-green">{{ attendance.get_status_display }}</span>
+                                {% elif attendance.status == 'absent' %}
+                                    <span class="badge-soft-red">{{ attendance.get_status_display }}</span>
+                                {% else %}
+                                    <span class="badge-soft-dark">{{ attendance.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ attendance.worked_hours|default:"-" }}</td>
+
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'attendance_detail' attendance.pk %}" class="btn-outline-soft">
+                                        Voir
+                                    </a>
+
+                                    {% if user.role == 'hr' or user.role == 'admin' %}
+                                        <a href="{% url 'attendance_update' attendance.pk %}" class="btn-dark-soft">
+                                            Modifier
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="empty-state">Aucune présence trouvée.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

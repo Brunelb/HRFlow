@@ -1,44 +1,87 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Gestion des utilisateurs{% endblock %}
+{% block title %}Utilisateurs - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>Gestion des utilisateurs</h1>
+<div class="module-page">
 
-    <p>
-        <a href="{% url 'user_create' %}">Créer un utilisateur</a>
-    </p>
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Utilisateurs</h1>
+            <p class="module-subtitle">Gestion des comptes, rôles et accès à la plateforme.</p>
+        </div>
 
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Nom d'utilisateur</th>
-                <th>Nom complet</th>
-                <th>Email</th>
-                <th>Rôle</th>
-                <th>Actif</th>
-                <th>Fiche employé</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in users_with_employee_flag %}
-                <tr>
-                    <td>{{ item.obj.username }}</td>
-                    <td>{{ item.obj.get_full_name|default:"-" }}</td>
-                    <td>{{ item.obj.email|default:"-" }}</td>
-                    <td>{{ item.obj.get_role_display }}</td>
-                    <td>{{ item.obj.is_active|yesno:"Oui,Non" }}</td>
-                    <td>{{ item.has_employee_profile|yesno:"Oui,Non" }}</td>
-                    <td>
-                        <a href="{% url 'user_update' item.obj.pk %}">Modifier</a>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="7">Aucun utilisateur trouvé.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <a href="{% url 'user_create' %}" class="btn-green">
+            Nouvel utilisateur
+        </a>
+    </div>
+
+    <div class="module-card">
+        <div class="table-responsive">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Actif</th>
+                        <th>Fiche employé</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in users_with_employee_flag %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.obj.username }}</strong><br>
+                                <span class="text-muted">{{ item.obj.get_full_name|default:"-" }}</span>
+                            </td>
+
+                            <td>{{ item.obj.email|default:"-" }}</td>
+
+                            <td>
+                                <span class="badge-soft-dark">{{ item.obj.get_role_display }}</span>
+                            </td>
+
+                            <td>
+                                {% if item.obj.is_active %}
+                                    <span class="badge-soft-green">Oui</span>
+                                {% else %}
+                                    <span class="badge-soft-red">Non</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if item.has_employee_profile %}
+                                    <span class="badge-soft-green">Oui</span>
+                                {% else %}
+                                    <span class="badge-soft-dark">Non</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'user_update' item.obj.pk %}" class="btn-outline-soft">
+                                        Modifier
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="empty-state">Aucun utilisateur trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

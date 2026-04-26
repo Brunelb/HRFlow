@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="module-page">
+
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">{{ title }}</h1>
+            <p class="module-subtitle">Renseigner les informations de paie.</p>
+        </div>
+    </div>
+
+    <div class="module-card form-card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn-green">
+                    Enregistrer
+                </button>
+
+                <a href="{% url 'payroll_list' %}" class="btn-outline-soft">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
