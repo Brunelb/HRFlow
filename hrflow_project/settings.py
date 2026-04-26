@@ -9,35 +9,29 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+"""
+Django settings for hrflow_project project.
+"""
 
 from pathlib import Path
 import os
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# SECURITY
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-vf-)hap(z+q11*d6q44p((jyp4n5ce4p-g%n2pz0-)66lo*nb='
+)
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+ALLOWED_HOSTS = os.environ.get(
+    'ALLOWED_HOSTS',
+    '127.0.0.1,localhost'
+).split(',')
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-vf-)hap(z+q11*d6q44p((jyp4n5ce4p-g%n2pz0-)66lo*nb='
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
-# Application definition
-
+# APPLICATIONS
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'accounts',
     'employees',
     'departments',
@@ -56,8 +51,11 @@ INSTALLED_APPS = [
     'core',
 ]
 
+# MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,6 +66,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'hrflow_project.urls'
 
+# TEMPLATES
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -85,22 +84,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'hrflow_project.wsgi.application'
-TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+# DATABASE
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600
+    )
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
+# PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -116,32 +109,28 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
+# INTERNATIONALIZATION
+LANGUAGE_CODE = 'fr-ca'
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
+# STATIC / MEDIA
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-STATIC_URL = 'static/'
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# USER MODEL
 AUTH_USER_MODEL = 'accounts.User'
 
+# AUTH REDIRECTS
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'role_redirect'
-LOGOUT_REDIRECT_URL = 'login'
-AUTH_USER_MODEL = 'accounts.User'
+LOGOUT_REDIRECT_URL = 'home'
+
+# DEFAULT PK
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
