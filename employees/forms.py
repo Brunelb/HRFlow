@@ -31,9 +31,7 @@ class EmployeeForm(forms.ModelForm):
 
         self.fields['user'].queryset = User.objects.filter(
             role__in=['hr', 'manager', 'employee']
-        ).exclude(
-            id__in=linked_user_ids
-        ).order_by('username')
+        ).exclude(id__in=linked_user_ids).order_by('username')
 
         self.fields['manager'].required = False
 

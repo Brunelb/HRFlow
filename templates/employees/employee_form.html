@@ -14,7 +14,7 @@
         <div>
             <h1 class="module-title">{{ title }}</h1>
             <p class="module-subtitle">
-                Renseigner les informations RH du membre du personnel.
+                Choisissez d’abord le département afin d’afficher uniquement les managers liés à ce département.
             </p>
         </div>
     </div>
@@ -23,7 +23,7 @@
 
         <form method="get" class="mb-4">
             <label for="department_filter">
-                <strong>Choisir un département pour filtrer les managers</strong>
+                <strong>Département</strong>
             </label>
 
             <select name="department" id="department_filter" class="form-control mt-2">
@@ -41,7 +41,7 @@
             </select>
 
             <button type="submit" class="btn-green mt-3">
-                Filtrer les managers
+                Afficher les managers de ce département
             </button>
         </form>
 
@@ -50,7 +50,81 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
-            {{ form.as_p }}
+            <input type="hidden" name="department" value="{{ selected_department }}">
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <p>
+                <label for="{{ form.user.id_for_label }}"><strong>Utilisateur :</strong></label>
+                {{ form.user }}
+                {{ form.user.errors }}
+            </p>
+
+            <p>
+                <label for="{{ form.phone.id_for_label }}"><strong>Téléphone :</strong></label>
+                {{ form.phone }}
+                {{ form.phone.errors }}
+            </p>
+
+            <p>
+                <label for="{{ form.address.id_for_label }}"><strong>Adresse :</strong></label>
+                {{ form.address }}
+                {{ form.address.errors }}
+            </p>
+
+            <p>
+                <label for="{{ form.hire_date.id_for_label }}"><strong>Date d’embauche :</strong></label>
+                {{ form.hire_date }}
+                {{ form.hire_date.errors }}
+            </p>
+
+            <p>
+                <label><strong>Département sélectionné :</strong></label><br>
+                {% if selected_department %}
+                    {% for dept in form.fields.department.queryset %}
+                        {% if selected_department|stringformat:"s" == dept.id|stringformat:"s" %}
+                            <span class="badge-soft-green">{{ dept.name }}</span>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <span class="badge-soft-red">Aucun département sélectionné</span>
+                {% endif %}
+                {{ form.department.errors }}
+            </p>
+
+            <p>
+                <label for="{{ form.manager.id_for_label }}"><strong>Manager :</strong></label>
+                {{ form.manager }}
+                {{ form.manager.errors }}
+
+                {% if not selected_department %}
+                    <small class="text-muted d-block mt-1">
+                        Sélectionnez d’abord un département pour afficher les managers disponibles.
+                    </small>
+                {% endif %}
+            </p>
+
+            <p>
+                <label for="{{ form.base_salary.id_for_label }}"><strong>Salaire de base :</strong></label>
+                {{ form.base_salary }}
+                {{ form.base_salary.errors }}
+            </p>
+
+            <p>
+                <label for="{{ form.profile_photo.id_for_label }}"><strong>Photo de profil :</strong></label>
+                {{ form.profile_photo }}
+                {{ form.profile_photo.errors }}
+            </p>
+
+            <p>
+                <label for="{{ form.status.id_for_label }}"><strong>Statut :</strong></label>
+                {{ form.status }}
+                {{ form.status.errors }}
+            </p>
 
             <div class="d-flex gap-2 mt-4">
                 <button type="submit" class="btn-green">
