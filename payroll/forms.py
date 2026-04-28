@@ -9,7 +9,6 @@ class PayrollForm(forms.ModelForm):
             'employee',
             'month',
             'year',
-            'base_salary',
             'bonus',
             'deductions',
             'note',

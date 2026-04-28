@@ -1,5 +1,10 @@
 from django.urls import path
-from .views import employee_list, employee_detail, employee_create, employee_update
+from .views import (
+    employee_list,
+    employee_detail,
+    employee_create,
+    employee_update,
+)
 
 urlpatterns = [
     path('', employee_list, name='employee_list'),

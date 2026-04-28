@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
+from django.db import IntegrityError
 
 from .models import Attendance
 from .forms import AttendanceCheckInOutForm, AttendanceAdminForm
@@ -43,17 +45,23 @@ def attendance_create(request):
 
     if request.method == 'POST':
         form = AttendanceCheckInOutForm(request.POST)
+
         if form.is_valid():
             attendance = form.save(commit=False)
             attendance.employee = employee
-            attendance.save()
-            return redirect('attendance_list')
+
+            try:
+                attendance.save()
+                messages.success(request, "Votre présence a été enregistrée.")
+                return redirect('attendance_list')
+            except IntegrityError:
+                form.add_error('date', "Une présence existe déjà pour cette date.")
     else:
         form = AttendanceCheckInOutForm()
 
     return render(request, 'attendance/attendance_form.html', {
         'form': form,
-        'title': 'Enregistrer une présence'
+        'title': 'Enregistrer ma présence'
     })
 
 
@@ -77,21 +85,28 @@ def attendance_detail(request, pk):
         'attendance': attendance
     })
 
+
 @login_required
 @role_required(['hr', 'admin'])
 def attendance_admin_create(request):
     if request.method == 'POST':
         form = AttendanceAdminForm(request.POST)
+
         if form.is_valid():
-            form.save()
-            return redirect('attendance_list')
+            try:
+                form.save()
+                messages.success(request, "La présence a été ajoutée avec succès.")
+                return redirect('attendance_list')
+            except IntegrityError:
+                form.add_error('date', "Une présence existe déjà pour cet employé à cette date.")
     else:
         form = AttendanceAdminForm()
 
     return render(request, 'attendance/attendance_form.html', {
         'form': form,
-        'title': 'Ajouter une présence (RH/Admin)'
+        'title': 'Ajouter une présence'
     })
+
 
 @login_required
 @role_required(['hr', 'admin'])
@@ -100,8 +115,10 @@ def attendance_update(request, pk):
 
     if request.method == 'POST':
         form = AttendanceAdminForm(request.POST, instance=attendance)
+
         if form.is_valid():
             form.save()
+            messages.success(request, "La présence a été modifiée avec succès.")
             return redirect('attendance_detail', pk=attendance.pk)
     else:
         form = AttendanceAdminForm(instance=attendance)
