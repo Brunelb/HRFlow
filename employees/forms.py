@@ -1,5 +1,4 @@
 from django import forms
-
 from .models import Employee
 from accounts.models import User
 
@@ -23,6 +22,7 @@ class EmployeeForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        department_id = kwargs.pop('department_id', None)
         super().__init__(*args, **kwargs)
 
         linked_user_ids = Employee.objects.exclude(
@@ -35,8 +35,12 @@ class EmployeeForm(forms.ModelForm):
             id__in=linked_user_ids
         ).order_by('username')
 
-        self.fields['manager'].queryset = User.objects.filter(
-            role='manager'
-        ).order_by('username')
-
         self.fields['manager'].required = False
+
+        if department_id:
+            self.fields['manager'].queryset = User.objects.filter(
+                role='manager',
+                employee_profile__department_id=department_id
+            ).order_by('username')
+        else:
+            self.fields['manager'].queryset = User.objects.none()

@@ -1,12 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
 
 from .models import Employee
 from .forms import EmployeeForm
-from accounts.models import User
 from accounts.decorators import role_required
 
 
@@ -55,19 +53,26 @@ def employee_detail(request, pk):
 @login_required
 @role_required(['hr', 'admin'])
 def employee_create(request):
+    department_id = request.GET.get('department') or request.POST.get('department')
+
     if request.method == 'POST':
-        form = EmployeeForm(request.POST, request.FILES)
+        form = EmployeeForm(
+            request.POST,
+            request.FILES,
+            department_id=department_id
+        )
 
         if form.is_valid():
             form.save()
             messages.success(request, "La fiche employé a été créée avec succès.")
             return redirect('employee_list')
     else:
-        form = EmployeeForm()
+        form = EmployeeForm(department_id=department_id)
 
     return render(request, 'employees/employee_form.html', {
         'form': form,
-        'title': 'Créer une fiche employé'
+        'title': 'Créer une fiche employé',
+        'selected_department': department_id,
     })
 
 
@@ -76,47 +81,32 @@ def employee_create(request):
 def employee_update(request, pk):
     employee = get_object_or_404(Employee, pk=pk)
 
+    department_id = (
+        request.GET.get('department')
+        or request.POST.get('department')
+        or employee.department_id
+    )
+
     if request.method == 'POST':
-        form = EmployeeForm(request.POST, request.FILES, instance=employee)
+        form = EmployeeForm(
+            request.POST,
+            request.FILES,
+            instance=employee,
+            department_id=department_id
+        )
 
         if form.is_valid():
             form.save()
             messages.success(request, "La fiche employé a été modifiée avec succès.")
             return redirect('employee_detail', pk=employee.pk)
     else:
-        form = EmployeeForm(instance=employee)
+        form = EmployeeForm(
+            instance=employee,
+            department_id=department_id
+        )
 
     return render(request, 'employees/employee_form.html', {
         'form': form,
-        'title': 'Modifier une fiche employé'
+        'title': 'Modifier une fiche employé',
+        'selected_department': department_id,
     })
-
-
-@login_required
-def get_managers_by_department(request):
-    department_id = request.GET.get('department_id')
-
-    if not department_id:
-        return JsonResponse({'managers': []})
-
-    managers = User.objects.filter(
-        role='manager',
-        employee_profile__department_id=department_id
-    ).values(
-        'id',
-        'username',
-        'first_name',
-        'last_name'
-    )
-
-    data = []
-
-    for manager in managers:
-        full_name = f"{manager['first_name']} {manager['last_name']}".strip()
-
-        data.append({
-            'id': manager['id'],
-            'name': full_name if full_name else manager['username']
-        })
-
-    return JsonResponse({'managers': data})
