@@ -31,3 +31,50 @@
 
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const departmentSelect = document.getElementById('id_department');
+    const managerSelect = document.getElementById('id_manager');
+
+    if (!departmentSelect || !managerSelect) {
+        return;
+    }
+
+    function loadManagersByDepartment(departmentId, selectedManagerId = null) {
+        managerSelect.innerHTML = '<option value="">Chargement...</option>';
+
+        if (!departmentId) {
+            managerSelect.innerHTML = '<option value="">---------</option>';
+            return;
+        }
+
+        fetch(`/employees/ajax/get-managers/?department_id=${departmentId}`)
+            .then(response => response.json())
+            .then(data => {
+                managerSelect.innerHTML = '<option value="">---------</option>';
+
+                data.managers.forEach(manager => {
+                    const option = document.createElement('option');
+                    option.value = manager.id;
+                    option.textContent = manager.name;
+
+                    if (selectedManagerId && String(manager.id) === String(selectedManagerId)) {
+                        option.selected = true;
+                    }
+
+                    managerSelect.appendChild(option);
+                });
+            })
+            .catch(() => {
+                managerSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+            });
+    }
+
+    departmentSelect.addEventListener('change', function () {
+        loadManagersByDepartment(this.value);
+    });
+});
+</script>
+{% endblock %}
