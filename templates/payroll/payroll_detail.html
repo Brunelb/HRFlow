@@ -18,9 +18,15 @@
             </p>
         </div>
 
-        <a href="{% url 'payroll_list' %}" class="btn-outline-soft">
-            Retour
-        </a>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'payroll_payslip' payroll.pk %}" class="btn-green">
+                Voir la fiche de paie
+            </a>
+
+            <a href="{% url 'payroll_list' %}" class="btn-outline-soft">
+                Retour
+            </a>
+        </div>
     </div>
 
     <div class="module-card">

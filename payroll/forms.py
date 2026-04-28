@@ -20,7 +20,14 @@ class SalaryHistoryForm(forms.ModelForm):
         model = SalaryHistory
         fields = [
             'employee',
-            'old_salary',
             'new_salary',
             'reason',
         ]
+
+    def __init__(self, *args, **kwargs):
+        selected_employee = kwargs.pop('selected_employee', None)
+        super().__init__(*args, **kwargs)
+
+        if selected_employee:
+            self.fields['employee'].initial = selected_employee
+            self.fields['employee'].widget.attrs['readonly'] = True

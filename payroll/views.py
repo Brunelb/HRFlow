@@ -9,6 +9,16 @@ from employees.models import Employee
 from accounts.decorators import role_required
 
 
+def can_access_payroll(user, payroll):
+    if user.role in ['admin', 'hr']:
+        return True
+
+    if user.role == 'employee':
+        return hasattr(user, 'employee_profile') and payroll.employee == user.employee_profile
+
+    return False
+
+
 @login_required
 def payroll_list(request):
     user = request.user
@@ -34,16 +44,23 @@ def payroll_list(request):
 @login_required
 def payroll_detail(request, pk):
     payroll = get_object_or_404(Payroll, pk=pk)
-    user = request.user
 
-    if user.role == 'employee':
-        if not hasattr(user, 'employee_profile') or payroll.employee != user.employee_profile:
-            raise PermissionDenied
-
-    elif user.role not in ['hr', 'admin']:
+    if not can_access_payroll(request.user, payroll):
         raise PermissionDenied
 
     return render(request, 'payroll/payroll_detail.html', {
+        'payroll': payroll
+    })
+
+
+@login_required
+def payroll_payslip(request, pk):
+    payroll = get_object_or_404(Payroll, pk=pk)
+
+    if not can_access_payroll(request.user, payroll):
+        raise PermissionDenied
+
+    return render(request, 'payroll/payroll_payslip.html', {
         'payroll': payroll
     })
 
@@ -57,13 +74,11 @@ def payroll_create(request):
         if form.is_valid():
             payroll = form.save(commit=False)
             payroll.generated_by = request.user
-
-            # salaire de base récupéré automatiquement depuis la fiche Employee
             payroll.base_salary = payroll.employee.base_salary
-
             payroll.save()
+
             messages.success(request, "La fiche de paie a été créée avec succès.")
-            return redirect('payroll_list')
+            return redirect('payroll_detail', pk=payroll.pk)
     else:
         form = PayrollForm()
 
@@ -83,12 +98,9 @@ def payroll_update(request, pk):
 
         if form.is_valid():
             updated_payroll = form.save(commit=False)
-
-            # on garde la logique dynamique :
-            # si l’employé change, le salaire de base est repris depuis Employee
             updated_payroll.base_salary = updated_payroll.employee.base_salary
-
             updated_payroll.save()
+
             messages.success(request, "La fiche de paie a été modifiée avec succès.")
             return redirect('payroll_detail', pk=payroll.pk)
     else:
@@ -128,14 +140,28 @@ def salary_history_list(request):
 @login_required
 @role_required(['hr', 'admin'])
 def salary_history_create(request):
+    employee_id = request.GET.get('employee') or request.POST.get('employee')
+    selected_employee = None
+
+    if employee_id:
+        selected_employee = get_object_or_404(Employee, pk=employee_id)
+
     if request.method == 'POST':
-        form = SalaryHistoryForm(request.POST)
+        form = SalaryHistoryForm(
+            request.POST,
+            selected_employee=selected_employee
+        )
 
         if form.is_valid():
             history = form.save(commit=False)
             history.changed_by = request.user
+
+            # Ancien salaire récupéré automatiquement depuis la fiche employé
+            history.old_salary = history.employee.base_salary
+
             history.save()
 
+            # Mise à jour du salaire actuel de l’employé
             employee = history.employee
             employee.base_salary = history.new_salary
             employee.save()
@@ -143,9 +169,10 @@ def salary_history_create(request):
             messages.success(request, "Le changement de salaire a été enregistré.")
             return redirect('salary_history_list')
     else:
-        form = SalaryHistoryForm()
+        form = SalaryHistoryForm(selected_employee=selected_employee)
 
     return render(request, 'payroll/salary_history_form.html', {
         'form': form,
-        'title': 'Enregistrer un changement de salaire'
+        'title': 'Enregistrer un changement de salaire',
+        'selected_employee': selected_employee,
     })
