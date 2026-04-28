@@ -13,17 +13,87 @@
     <div class="module-header">
         <div>
             <h1 class="module-title">{{ title }}</h1>
-            <p class="module-subtitle">Enregistrer une modification du salaire de base.</p>
+            <p class="module-subtitle">
+                Choisissez d’abord un employé afin d’afficher automatiquement son salaire actuel.
+            </p>
         </div>
     </div>
 
     <div class="module-card form-card">
+
+        <form method="get" class="mb-4">
+            <label for="employee_filter">
+                <strong>Employé</strong>
+            </label>
+
+            <select name="employee" id="employee_filter" class="form-control mt-2">
+                <option value="">---------</option>
+
+                {% for employee in form.fields.employee.queryset %}
+                    <option value="{{ employee.id }}"
+                        {% if selected_employee and selected_employee.id == employee.id %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ employee }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-green mt-3">
+                Charger le salaire actuel
+            </button>
+        </form>
+
+        <hr class="my-4">
+
+        {% if selected_employee %}
+            <div class="alert alert-info">
+                <strong>Employé sélectionné :</strong> {{ selected_employee }}<br>
+                <strong>Salaire actuel :</strong> {{ selected_employee.base_salary }}
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                Sélectionnez un employé avant d’enregistrer un changement de salaire.
+            </div>
+        {% endif %}
+
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            {% if selected_employee %}
+                <input type="hidden" name="employee" value="{{ selected_employee.id }}">
+            {% endif %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <p>
+                <label><strong>Ancien salaire :</strong></label><br>
+                {% if selected_employee %}
+                    <span class="badge-soft-green">{{ selected_employee.base_salary }}</span>
+                {% else %}
+                    <span class="badge-soft-red">Aucun employé sélectionné</span>
+                {% endif %}
+            </p>
+
+            <p>
+                <label for="{{ form.new_salary.id_for_label }}"><strong>Nouveau salaire :</strong></label>
+                {{ form.new_salary }}
+                {{ form.new_salary.errors }}
+            </p>
+
+            <p>
+                <label for="{{ form.reason.id_for_label }}"><strong>Raison :</strong></label>
+                {{ form.reason }}
+                {{ form.reason.errors }}
+            </p>
 
             <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn-green">
+                <button type="submit" class="btn-green" {% if not selected_employee %}disabled{% endif %}>
                     Enregistrer
                 </button>
 

@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fiche de paie - HRFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/modules.css' %}">
+
+<style>
+    .payslip-wrapper {
+        max-width: 950px;
+        margin: 0 auto;
+    }
+
+    .payslip-card {
+        background: #ffffff;
+        border: 1px solid #dde1e6;
+        border-radius: 18px;
+        padding: 36px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .payslip-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        border-bottom: 2px solid #202428;
+        padding-bottom: 24px;
+        margin-bottom: 28px;
+    }
+
+    .payslip-brand h1 {
+        font-size: 30px;
+        font-weight: 900;
+        margin-bottom: 6px;
+        color: #202428;
+    }
+
+    .payslip-brand p {
+        margin: 0;
+        color: #5f646b;
+    }
+
+    .payslip-period {
+        text-align: right;
+    }
+
+    .payslip-period span {
+        display: inline-block;
+        background: #d9f2e5;
+        color: #2f8a56;
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 8px 14px;
+        margin-bottom: 10px;
+    }
+
+    .payslip-period h2 {
+        font-size: 22px;
+        font-weight: 800;
+        color: #202428;
+        margin: 0;
+    }
+
+    .payslip-section {
+        margin-bottom: 28px;
+    }
+
+    .payslip-section h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #202428;
+        margin-bottom: 16px;
+    }
+
+    .payslip-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 28px;
+    }
+
+    .payslip-info {
+        border-bottom: 1px solid #eef0f2;
+        padding-bottom: 10px;
+    }
+
+    .payslip-info strong {
+        display: block;
+        color: #202428;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .payslip-info span {
+        color: #5f646b;
+    }
+
+    .payslip-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+    }
+
+    .payslip-table th {
+        background: #202428;
+        color: #ffffff;
+        text-align: left;
+        padding: 14px;
+        font-weight: 800;
+    }
+
+    .payslip-table td {
+        padding: 14px;
+        border-bottom: 1px solid #eef0f2;
+        color: #3f454d;
+    }
+
+    .payslip-table .amount {
+        text-align: right;
+        font-weight: 800;
+    }
+
+    .payslip-net {
+        background: #d9f2e5;
+        border: 1px solid #bfe8d2;
+        border-radius: 16px;
+        padding: 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 24px;
+    }
+
+    .payslip-net span {
+        color: #2f8a56;
+        font-weight: 800;
+        font-size: 16px;
+    }
+
+    .payslip-net strong {
+        color: #202428;
+        font-size: 34px;
+        font-weight: 900;
+    }
+
+    .payslip-footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+        margin-top: 36px;
+    }
+
+    .signature-box {
+        border-top: 1px solid #202428;
+        padding-top: 10px;
+        color: #5f646b;
+        font-size: 14px;
+    }
+
+    .payslip-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+
+    @media print {
+        nav,
+        .payslip-actions,
+        .module-header {
+            display: none !important;
+        }
+
+        body {
+            background: #ffffff !important;
+        }
+
+        .payslip-card {
+            box-shadow: none;
+            border: none;
+            padding: 0;
+        }
+
+        .payslip-wrapper {
+            max-width: 100%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .payslip-header,
+        .payslip-net {
+            flex-direction: column;
+            text-align: left;
+            align-items: flex-start;
+        }
+
+        .payslip-period {
+            text-align: left;
+        }
+
+        .payslip-grid,
+        .payslip-footer {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="module-page">
+
+    <div class="module-header">
+        <div>
+            <h1 class="module-title">Fiche de paie</h1>
+            <p class="module-subtitle">
+                Document salarial mensuel généré depuis HRFlow.
+            </p>
+        </div>
+    </div>
+
+    <div class="payslip-wrapper">
+
+        <div class="payslip-actions">
+            <button onclick="window.print()" class="btn-green">
+                Imprimer / Enregistrer PDF
+            </button>
+
+            <a href="{% url 'payroll_detail' payroll.pk %}" class="btn-outline-soft">
+                Retour
+            </a>
+        </div>
+
+        <div class="payslip-card">
+
+            <div class="payslip-header">
+                <div class="payslip-brand">
+                    <h1>HRFlow</h1>
+                    <p>Système de gestion du personnel</p>
+                    <p>Fiche de paie générée automatiquement</p>
+                </div>
+
+                <div class="payslip-period">
+                    <span>{{ payroll.get_month_display }} {{ payroll.year }}</span>
+                    <h2>Bulletin de paie</h2>
+                </div>
+            </div>
+
+            <div class="payslip-section">
+                <h3>Informations de l’employé</h3>
+
+                <div class="payslip-grid">
+                    <div class="payslip-info">
+                        <strong>Nom complet</strong>
+                        <span>{{ payroll.employee.user.get_full_name|default:payroll.employee.user.username }}</span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Matricule</strong>
+                        <span>{{ payroll.employee.employee_id }}</span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Email</strong>
+                        <span>{{ payroll.employee.user.email|default:"-" }}</span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Téléphone</strong>
+                        <span>{{ payroll.employee.phone|default:"-" }}</span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Département</strong>
+                        <span>
+                            {% if payroll.employee.department %}
+                                {{ payroll.employee.department.name }}
+                            {% else %}
+                                Non défini
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Manager</strong>
+                        <span>
+                            {% if payroll.employee.manager %}
+                                {{ payroll.employee.manager.get_full_name|default:payroll.employee.manager.username }}
+                            {% else %}
+                                Non défini
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Date d’embauche</strong>
+                        <span>{{ payroll.employee.hire_date|default:"-" }}</span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Statut</strong>
+                        <span>{{ payroll.employee.get_status_display }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payslip-section">
+                <h3>Détails de rémunération</h3>
+
+                <table class="payslip-table">
+                    <thead>
+                        <tr>
+                            <th>Élément</th>
+                            <th>Description</th>
+                            <th class="amount">Montant</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>Salaire de base</td>
+                            <td>Salaire mensuel de référence</td>
+                            <td class="amount">{{ payroll.base_salary }}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Bonus</td>
+                            <td>Primes ou avantages du mois</td>
+                            <td class="amount">{{ payroll.bonus }}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Déductions</td>
+                            <td>Retenues ou déductions applicables</td>
+                            <td class="amount">- {{ payroll.deductions }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="payslip-net">
+                    <span>Salaire net à payer</span>
+                    <strong>{{ payroll.net_salary }}</strong>
+                </div>
+            </div>
+
+            <div class="payslip-section">
+                <h3>Informations de génération</h3>
+
+                <div class="payslip-grid">
+                    <div class="payslip-info">
+                        <strong>Généré par</strong>
+                        <span>{{ payroll.generated_by|default:"-" }}</span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Date de génération</strong>
+                        <span>{{ payroll.generated_at }}</span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Dernière modification</strong>
+                        <span>{{ payroll.updated_at }}</span>
+                    </div>
+
+                    <div class="payslip-info">
+                        <strong>Note</strong>
+                        <span>{{ payroll.note|default:"Aucune note" }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
