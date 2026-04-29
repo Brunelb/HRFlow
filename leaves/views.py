@@ -6,10 +6,16 @@ from .models import LeaveRequest
 from .forms import LeaveRequestForm, ManagerLeaveApprovalForm, HRLeaveApprovalForm
 from employees.models import Employee
 from accounts.decorators import role_required
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 @login_required
 def leave_list(request):
     user = request.user
+
+    search_query = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '').strip()
+    per_page = request.GET.get('per_page', '10')
 
     if user.role == 'employee':
         try:
@@ -27,7 +33,34 @@ def leave_list(request):
     else:
         leaves = LeaveRequest.objects.none()
 
-    return render(request, 'leaves/leave_list.html', {'leaves': leaves})
+    leaves = leaves.select_related('employee', 'employee__user').order_by('-created_at')
+
+    if search_query:
+        leaves = leaves.filter(
+            Q(employee__user__first_name__icontains=search_query) |
+            Q(employee__user__last_name__icontains=search_query) |
+            Q(employee__user__username__icontains=search_query) |
+            Q(employee__employee_id__icontains=search_query)
+        )
+
+    if status:
+        leaves = leaves.filter(status=status)
+
+    if per_page not in ['10', '20']:
+        per_page = '10'
+
+    paginator = Paginator(leaves, int(per_page))
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'leaves/leave_list.html', {
+        'leaves': page_obj,
+        'page_obj': page_obj,
+        'search_query': search_query,
+        'selected_status': status,
+        'per_page': per_page,
+        'status_choices': LeaveRequest.STATUS_CHOICES,
+    })
 
 @login_required
 @role_required(['employee', 'manager', 'hr'])

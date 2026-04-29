@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 from .models import Attendance
 from .forms import AttendanceCheckInOutForm, AttendanceAdminForm
@@ -13,6 +15,11 @@ from accounts.decorators import role_required
 @login_required
 def attendance_list(request):
     user = request.user
+
+    search_query = request.GET.get('q', '').strip()
+    date = request.GET.get('date', '').strip()
+    status = request.GET.get('status', '').strip()
+    per_page = request.GET.get('per_page', '10')
 
     if user.role == 'employee':
         try:
@@ -30,8 +37,43 @@ def attendance_list(request):
     else:
         attendances = Attendance.objects.none()
 
+    attendances = attendances.select_related(
+        'employee',
+        'employee__user',
+        'employee__department',
+        'employee__manager',
+    ).order_by('-date', '-check_in')
+
+    if search_query:
+        attendances = attendances.filter(
+            Q(employee__user__first_name__icontains=search_query) |
+            Q(employee__user__last_name__icontains=search_query) |
+            Q(employee__user__username__icontains=search_query) |
+            Q(employee__user__email__icontains=search_query) |
+            Q(employee__employee_id__icontains=search_query)
+        )
+
+    if date:
+        attendances = attendances.filter(date=date)
+
+    if status:
+        attendances = attendances.filter(status=status)
+
+    if per_page not in ['10', '20']:
+        per_page = '10'
+
+    paginator = Paginator(attendances, int(per_page))
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'attendance/attendance_list.html', {
-        'attendances': attendances
+        'attendances': page_obj,
+        'page_obj': page_obj,
+        'search_query': search_query,
+        'selected_date': date,
+        'selected_status': status,
+        'per_page': per_page,
+        'status_choices': Attendance.STATUS_CHOICES,
     })
 
 

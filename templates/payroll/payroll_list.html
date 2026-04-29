@@ -13,7 +13,12 @@
     <div class="module-header">
         <div>
             <h1 class="module-title">Fiches de paie</h1>
-            <p class="module-subtitle">Suivi des salaires, bonus, déductions et fiches mensuelles.</p>
+
+            {% if user.role == 'employee' %}
+                <p class="module-subtitle">Consultation de vos fiches de paie mensuelles.</p>
+            {% else %}
+                <p class="module-subtitle">Recherche, filtrage et suivi des salaires mensuels.</p>
+            {% endif %}
         </div>
 
         {% if user.role == 'hr' or user.role == 'admin' %}
@@ -27,6 +32,65 @@
                 </a>
             </div>
         {% endif %}
+    </div>
+
+    <div class="filter-card">
+        <form method="get" class="filter-form">
+
+            {% if user.role == 'admin' or user.role == 'hr' %}
+            <div class="filter-group">
+                <label>Recherche employé</label>
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ search_query }}"
+                    placeholder="Nom, prénom, username, matricule..."
+                >
+            </div>
+            {% endif %}
+
+            <div class="filter-group">
+                <label>Mois</label>
+                <select name="month">
+                    <option value="">Tous</option>
+                    {% for value, label in month_choices %}
+                        <option value="{{ value }}"
+                            {% if selected_month|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Année</label>
+                <select name="year">
+                    <option value="">Toutes</option>
+                    {% for y in years %}
+                        <option value="{{ y }}"
+                            {% if selected_year|stringformat:"s" == y|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ y }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Par page</label>
+                <select name="per_page">
+                    <option value="10" {% if per_page == "10" %}selected{% endif %}>10</option>
+                    <option value="20" {% if per_page == "20" %}selected{% endif %}>20</option>
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn-green">Filtrer</button>
+                <a href="{% url 'payroll_list' %}" class="btn-outline-soft">Réinitialiser</a>
+            </div>
+
+        </form>
     </div>
 
     <div class="module-card">
@@ -76,12 +140,42 @@
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="8" class="empty-state">Aucune fiche de paie trouvée.</td>
+                            <td colspan="8" class="empty-state">
+                                Aucune fiche de paie trouvée.
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        {% if page_obj.has_other_pages %}
+            <div class="pagination-box">
+
+                {% if page_obj.has_previous %}
+                    <a href="?q={{ search_query }}&month={{ selected_month }}&year={{ selected_year }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">
+                        Précédent
+                    </a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <span class="active">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?q={{ search_query }}&month={{ selected_month }}&year={{ selected_year }}&per_page={{ per_page }}&page={{ num }}">
+                            {{ num }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?q={{ search_query }}&month={{ selected_month }}&year={{ selected_year }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">
+                        Suivant
+                    </a>
+                {% endif %}
+
+            </div>
+        {% endif %}
     </div>
 
 </div>

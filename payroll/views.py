@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 from .models import Payroll, SalaryHistory
 from .forms import PayrollForm, SalaryHistoryForm
@@ -23,6 +25,11 @@ def can_access_payroll(user, payroll):
 def payroll_list(request):
     user = request.user
 
+    search_query = request.GET.get('q', '').strip()
+    month = request.GET.get('month', '').strip()
+    year = request.GET.get('year', '').strip()
+    per_page = request.GET.get('per_page', '10')
+
     if user.role == 'employee':
         try:
             employee = user.employee_profile
@@ -36,8 +43,45 @@ def payroll_list(request):
     else:
         payrolls = Payroll.objects.none()
 
+    payrolls = payrolls.select_related(
+        'employee',
+        'employee__user',
+        'employee__department',
+        'generated_by'
+    )
+
+    if search_query:
+        payrolls = payrolls.filter(
+            Q(employee__user__first_name__icontains=search_query) |
+            Q(employee__user__last_name__icontains=search_query) |
+            Q(employee__user__username__icontains=search_query) |
+            Q(employee__employee_id__icontains=search_query)
+        )
+
+    if month:
+        payrolls = payrolls.filter(month=month)
+
+    if year:
+        payrolls = payrolls.filter(year=year)
+
+    if per_page not in ['10', '20']:
+        per_page = '10'
+
+    paginator = Paginator(payrolls, int(per_page))
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    years = Payroll.objects.values_list('year', flat=True).distinct().order_by('-year')
+
     return render(request, 'payroll/payroll_list.html', {
-        'payrolls': payrolls
+        'payrolls': page_obj,
+        'page_obj': page_obj,
+        'search_query': search_query,
+        'selected_month': month,
+        'selected_year': year,
+        'per_page': per_page,
+        'month_choices': Payroll.MONTH_CHOICES,
+        'years': years,
     })
 
 
@@ -155,13 +199,9 @@ def salary_history_create(request):
         if form.is_valid():
             history = form.save(commit=False)
             history.changed_by = request.user
-
-            # Ancien salaire récupéré automatiquement depuis la fiche employé
             history.old_salary = history.employee.base_salary
-
             history.save()
 
-            # Mise à jour du salaire actuel de l’employé
             employee = history.employee
             employee.base_salary = history.new_salary
             employee.save()

@@ -13,7 +13,14 @@
     <div class="module-header">
         <div>
             <h1 class="module-title">Demandes de congé</h1>
-            <p class="module-subtitle">Suivi des demandes, validations manager et validations RH.</p>
+
+            {% if user.role == 'employee' %}
+                <p class="module-subtitle">Suivi de vos demandes de congé.</p>
+            {% elif user.role == 'manager' %}
+                <p class="module-subtitle">Suivi des demandes de congé de votre équipe.</p>
+            {% else %}
+                <p class="module-subtitle">Recherche, filtrage et suivi des demandes de congé.</p>
+            {% endif %}
         </div>
 
         {% if user.role == 'employee' or user.role == 'manager' or user.role == 'hr' %}
@@ -21,6 +28,55 @@
                 Nouvelle demande
             </a>
         {% endif %}
+    </div>
+
+    <div class="filter-card">
+        <form method="get" class="filter-form">
+
+            {% if user.role == 'admin' or user.role == 'hr' or user.role == 'manager' %}
+            <div class="filter-group">
+                <label>
+                    {% if user.role == 'manager' %}
+                        Recherche dans mon équipe
+                    {% else %}
+                        Recherche employé
+                    {% endif %}
+                </label>
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ search_query }}"
+                    placeholder="Nom, username, matricule..."
+                >
+            </div>
+            {% endif %}
+
+            <div class="filter-group">
+                <label>Statut</label>
+                <select name="status">
+                    <option value="">Tous</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Par page</label>
+                <select name="per_page">
+                    <option value="10" {% if per_page == "10" %}selected{% endif %}>10</option>
+                    <option value="20" {% if per_page == "20" %}selected{% endif %}>20</option>
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn-green">Filtrer</button>
+                <a href="{% url 'leave_list' %}" class="btn-outline-soft">Réinitialiser</a>
+            </div>
+
+        </form>
     </div>
 
     <div class="module-card">
@@ -79,12 +135,42 @@
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="6" class="empty-state">Aucune demande de congé trouvée.</td>
+                            <td colspan="6" class="empty-state">
+                                Aucune demande de congé trouvée.
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        {% if page_obj.has_other_pages %}
+            <div class="pagination-box">
+
+                {% if page_obj.has_previous %}
+                    <a href="?q={{ search_query }}&status={{ selected_status }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">
+                        Précédent
+                    </a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <span class="active">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?q={{ search_query }}&status={{ selected_status }}&per_page={{ per_page }}&page={{ num }}">
+                            {{ num }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?q={{ search_query }}&status={{ selected_status }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">
+                        Suivant
+                    </a>
+                {% endif %}
+
+            </div>
+        {% endif %}
     </div>
 
 </div>
